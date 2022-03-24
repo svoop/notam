@@ -37,7 +37,28 @@ bundle install --trust-policy MediumSecurity
 
 ## Usage
 
-TODO
+```ruby
+raw_message = <<~END
+  A1484/02 NOTAMN
+  Q) EGTT/QMRXX/IV/NBO/A/000/999/5129N00028W005
+  A) EGLL
+  B) 0208231540
+  C) 0210310500 EST
+  E) RWY 09R/27L DUE WIP NO CENTRELINE, TDZ OR SALS LIGHTING AVBL
+END
+
+notam = NOTAM.parse(raw_message)
+notam.valid?                  # => true
+notam.fir                     # => "EGLL"
+notam.country                 # => "UK"
+notam.center_xy               # => #<AIXM::XY 51.48333333N 000.46666667W>
+notam.radius                  # => #<AIXM::D 5.0 nm>
+notam.effective_at            # => 2002-08-23 15:40:00.000000 +0000
+notam.expiration_at           # => 2002-10-31 05:00:00.000000 +0000
+notam.estimated_expiration?   # => true
+```
+
+See the [API documentation](https://www.rubydoc.info/gems/notam) for more.
 
 ## References
 
