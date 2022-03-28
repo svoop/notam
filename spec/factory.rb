@@ -31,6 +31,10 @@ module NOTAM
 
       def c
         @c ||= {
+          fix: 'C) 0210310200',
+          estimated: 'C) 0210310500 EST',
+          spaceless: 'C) 0210041030EST',
+          permanent: 'C) PERM'
         }
       end
 
