@@ -23,7 +23,7 @@ gem cert --add <(curl -Ls https://raw.github.com/svoop/notam/main/certs/svoop.pe
 
 ### Bundler
 
-Add the following to the <tt>Gemfile</tt> or <tt>gems.rb</tt> of your [Bundler](https://bundler.io) powered Ruby project:
+Add the following to the <samp>Gemfile</samp> or <samp>gems.rb</samp> of your [Bundler](https://bundler.io) powered Ruby project:
 
 ```ruby
 gem notam
@@ -62,9 +62,17 @@ See the [API documentation](https://www.rubydoc.info/gems/notam) for more.
 
 ## References
 
-* [ICAO Annex 15](https://www.bazl.admin.ch/bazl/en/home/specialists/regulations-and-guidelines/legislation-and-directives/anhaenge-zur-konvention-der-internationalen-zivilluftfahrtorgani.html)
+* [ICAO Annex 15 on NOTAM](https://www.bazl.admin.ch/bazl/en/home/specialists/regulations-and-guidelines/legislation-and-directives/anhaenge-zur-konvention-der-internationalen-zivilluftfahrtorgani.html)
+* [NOTAM Q Codes](https://www.faa.gov/air_traffic/publications/atpubs/notam_html/appendix_b.html)
+* [NOTAM Contractions](https://www.notams.faa.gov/downloads/contractions.pdf)
 * [NOTAM format cheat sheet](http://vat-air.dk/files/ICAO%20NOTAM%20format.pdf)
 * [Introduction on Wikipedia](https://en.wikipedia.org/wiki/NOTAM)
+
+## Translations
+
+You find the translations for each available language in <samp>lib/locales/</samp>. Additional translations are very welcome provided you have sufficient aeronautical background knowledge.
+
+Please [create a translation request issue](https://github.com/svoop/notam/issues), then duplicate the <samp>lib/locales/en.yml</samp> reference language file and translate it.
 
 ## Development
 

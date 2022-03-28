@@ -3,10 +3,6 @@
 module NOTAM
   class Head < Item
 
-    ID_RE = %r(
-      [A-RU-Z]\d{4}/\d{2}
-    )x.freeze
-
     RE = %r(
       \A
       (?<id>#{ID_RE})\s+
