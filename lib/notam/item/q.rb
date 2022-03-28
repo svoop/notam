@@ -6,7 +6,7 @@ module NOTAM
     RE = %r(
       \A
       Q\)\s
-      (?<fir>#{FIR_RE})/
+      (?<fir>#{ICAO_RE})/
       Q(?<subject>[A-Z]{2})(?<condition>[A-Z]{2})/
       (?<traffic>I|V|IV)/
       (?<purpose>NBO|BO|M|K)/
@@ -22,10 +22,12 @@ module NOTAM
       captures['fir']
     end
 
+    # @return [Symbol]
     def subject
       NOTAM.subject_for(captures['subject'])
     end
 
+    # @return [Symbol]
     def condition
       NOTAM.condition_for(captures['condition'])
     end

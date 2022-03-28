@@ -18,6 +18,8 @@ module NOTAM
 
       def a
         @a ||= {
+          egll: 'A) EGLL',
+          lsas: 'A) LSAS LOVV LIMM'
         }
       end
 

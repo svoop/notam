@@ -4,7 +4,7 @@ module NOTAM
   class Item
 
     ID_RE = /[A-RU-Z]\d{4}\/\d{2}/.freeze
-    FIR_RE = /[A-Z]{4}/.freeze
+    ICAO_RE = /[A-Z]{4}/.freeze
 
     attr_reader :content
 
