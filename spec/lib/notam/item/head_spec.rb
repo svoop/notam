@@ -2,36 +2,38 @@ require_relative '../../../spec_helper'
 
 describe NOTAM::Head do
   subject do
-    NOTAM::Factory.head
+    NOTAM::Factory.head.transform_values do |value|
+      NOTAM::Item.parse(value)
+    end
   end
 
   describe :id do
     it "returns the message ID" do
-      _(NOTAM::Item.parse(subject[:new]).id).must_equal 'A0135/20'
+      _(subject[:new].id).must_equal 'A0135/20'
     end
   end
 
   describe :new? do
     it "detects new message" do
-      _(NOTAM::Item.parse(subject[:new])).must_be :new?
-      _(NOTAM::Item.parse(subject[:replace])).wont_be :new?
-      _(NOTAM::Item.parse(subject[:cancel])).wont_be :new?
+      _(subject[:new]).must_be :new?
+      _(subject[:replace]).wont_be :new?
+      _(subject[:cancel]).wont_be :new?
     end
   end
 
   describe :replaces do
     it "detects replacing message and returns replaced message" do
-      _(NOTAM::Item.parse(subject[:new]).replaces).must_be :nil?
-      _(NOTAM::Item.parse(subject[:replace]).replaces).must_equal 'A0135/20'
-      _(NOTAM::Item.parse(subject[:cancel]).replaces).must_be :nil?
+      _(subject[:new].replaces).must_be :nil?
+      _(subject[:replace].replaces).must_equal 'A0135/20'
+      _(subject[:cancel].replaces).must_be :nil?
     end
   end
 
   describe :cancels do
     it "detects cancelling message and returns cancelled message" do
-      _(NOTAM::Item.parse(subject[:new]).cancels).must_be :nil?
-      _(NOTAM::Item.parse(subject[:replace]).cancels).must_be :nil?
-      _(NOTAM::Item.parse(subject[:cancel]).cancels).must_equal 'A0137/20'
+      _(subject[:new].cancels).must_be :nil?
+      _(subject[:replace].cancels).must_be :nil?
+      _(subject[:cancel].cancels).must_equal 'A0137/20'
     end
   end
 

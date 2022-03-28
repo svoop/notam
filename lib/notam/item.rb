@@ -43,6 +43,10 @@ module NOTAM
       end
     end
 
+    def inspect
+      %Q(#<#{self.class} "#{truncated_content}">)
+    end
+
     private
 
     def valid?
@@ -51,6 +55,10 @@ module NOTAM
 
     def captures
       @captures ||= self.class.const_get('RE').match(@content)&.named_captures
+    end
+
+    def truncated_content(start: 3, length: 40)
+      content.length > length + start ? content[start, length-1] + '…' : content
     end
 
   end

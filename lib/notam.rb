@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require 'aixm'
 require 'i18n'
+require 'countries'
 
 require_relative "notam/version"
 require_relative "notam/translation"
