@@ -25,6 +25,7 @@ module NOTAM
 
       def b
         @b ||= {
+          fix: 'B) 0208231540'
         }
       end
 

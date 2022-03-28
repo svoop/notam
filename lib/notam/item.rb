@@ -5,6 +5,7 @@ module NOTAM
 
     ID_RE = /[A-RU-Z]\d{4}\/\d{2}/.freeze
     ICAO_RE = /[A-Z]{4}/.freeze
+    TIME_RE = /(?:\d{2})(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])(?:[01]\d|[2][0-4])(?:[0-5]\d)/.freeze
 
     attr_reader :content
 
@@ -55,6 +56,12 @@ module NOTAM
 
     def captures
       @captures ||= self.class.const_get('RE').match(@content)&.named_captures
+    end
+
+    def time(timestamp)
+      short_year, month, day, hour, minute = timestamp.scan(/\d{2}/).map(&:to_i)
+      millenium = Time.now.year / 100 * 100
+      Time.new(millenium + short_year, month, day, hour, minute, 0, 'UTC')
     end
 
     def truncated_content(start: 3, length: 40)
