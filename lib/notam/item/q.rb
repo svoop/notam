@@ -5,7 +5,7 @@ module NOTAM
 
     RE = %r(
       \A
-      Q\)\s
+      Q\)\s?
       (?<fir>#{ICAO_RE})/
       Q(?<subject>[A-Z]{2})(?<condition>[A-Z]{2})/
       (?<traffic>I|V|IV)/

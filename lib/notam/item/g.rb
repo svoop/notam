@@ -5,7 +5,7 @@ module NOTAM
 
     RE = %r(
       \A
-      G\)\s
+      G\)\s?
       (?:
         (?<value>\d+)\s?(?<unit>FT|M)\s?(?<base>AMSL|AGL)|
         (?<unit>FL)\s?(?<value>\d+)

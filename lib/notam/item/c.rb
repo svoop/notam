@@ -5,7 +5,7 @@ module NOTAM
 
     RE = %r(
       \A
-      C\)\s
+      C\)\s?
       (?<permanent>
         PERM|
         (?<expiration_at>#{TIME_RE}) \s? (?<estimated>EST)?

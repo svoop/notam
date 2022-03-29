@@ -5,7 +5,7 @@ module NOTAM
 
     RE = %r(
       \A
-      B\)\s
+      B\)\s?
       (?<effective_at>#{TIME_RE})
       \z
     )x.freeze

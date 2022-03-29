@@ -5,7 +5,7 @@ module NOTAM
 
     RE = %r(
       \A
-      A\)\s
+      A\)\s?
       (?<locations>(?:#{ICAO_RE}\s?)+)
       \z
     )x.freeze
