@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module NOTAM
   class Factory
     class << self
