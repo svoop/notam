@@ -64,6 +64,15 @@ module NOTAM
       Time.new(millenium + short_year, month, day, hour, minute, 0, 'UTC')
     end
 
+    def limit(value, unit, base)
+      if captures['base']
+        d = AIXM.d(value.to_i, unit).to_ft
+        AIXM.z(d.dim.round, { 'AMSL' => :qnh, 'AGL' => :qfe }[base])
+      else
+        AIXM.z(value.to_i, :qne)
+      end
+    end
+
     def truncated_content(start: 3, length: 40)
       content.length > length + start ? content[start, length-1] + '…' : content
     end

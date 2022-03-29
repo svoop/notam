@@ -50,11 +50,23 @@ module NOTAM
 
       def f
         @f ||= {
+          qnh: 'F) 2000 FT AMSL',
+          qnh_m: 'F) 1000M AMSL',
+          qfe: 'F) 2100FT AGL',
+          qfe_m: 'F) 1100 M AGL',
+          qne: 'F) FL100',
+          qne_space: 'F) FL 110'
         }
       end
 
       def g
         @g ||= {
+          qnh: 'G) 2050 FT AMSL',
+          qnh_m: 'G) 1050M AMSL',
+          qfe: 'G) 2150FT AGL',
+          qfe_m: 'G) 1150 M AGL',
+          qne: 'G) FL150',
+          qne_space: 'G) FL 160'
         }
       end
 
