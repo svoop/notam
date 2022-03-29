@@ -6,7 +6,8 @@ module NOTAM
     RE = %r(
       \A
       F\)\s?
-      (?:
+      (?<all>
+        UNL|
         (?<value>\d+)\s?(?<unit>FT|M)\s?(?<base>AMSL|AGL)|
         (?<unit>FL)\s?(?<value>\d+)
       )
@@ -15,7 +16,11 @@ module NOTAM
 
     # @return [AIXM::Z]
     def upper_limit
-      limit(*captures.values_at('value', 'unit', 'base'))
+      if captures['all'] == 'UNL'
+        AIXM::UNLIMITED
+      else
+        limit(*captures.values_at('value', 'unit', 'base'))
+      end
     end
 
     def valid?

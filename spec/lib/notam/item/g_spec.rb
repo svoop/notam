@@ -30,6 +30,14 @@ describe NOTAM::G do
       _(subject[:qne].lower_limit).must_equal AIXM.z(150, :qne)
       _(subject[:qne_space].lower_limit).must_equal AIXM.z(160, :qne)
     end
+
+    it "returns AIXM::GROUND for SFC" do
+      _(subject[:sfc].lower_limit).must_equal AIXM::GROUND
+    end
+
+    it "returns AIXM::GROUND for GND" do
+      _(subject[:gnd].lower_limit).must_equal AIXM::GROUND
+    end
   end
 
   describe :valid? do

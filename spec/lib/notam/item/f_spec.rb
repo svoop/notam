@@ -30,6 +30,10 @@ describe NOTAM::F do
       _(subject[:qne].upper_limit).must_equal AIXM.z(100, :qne)
       _(subject[:qne_space].upper_limit).must_equal AIXM.z(110, :qne)
     end
+
+    it "returns AIXM::UNLIMITED for UNL" do
+      _(subject[:unl].upper_limit).must_equal AIXM::UNLIMITED
+    end
   end
 
   describe :valid? do

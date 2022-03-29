@@ -57,7 +57,8 @@ module NOTAM
           qfe: 'F) 2100FT AGL',
           qfe_m: 'F) 1100 M AGL',
           qne: 'F) FL100',
-          qne_space: 'F) FL 110'
+          qne_space: 'F) FL 110',
+          unl: 'F) UNL'
         }
       end
 
@@ -68,7 +69,9 @@ module NOTAM
           qfe: 'G) 2150FT AGL',
           qfe_m: 'G) 1150 M AGL',
           qne: 'G) FL150',
-          qne_space: 'G) FL 160'
+          qne_space: 'G) FL 160',
+          sfc: 'G) SFC',
+          gnd: 'G) GND'
         }
       end
 

@@ -6,7 +6,9 @@ module NOTAM
     RE = %r(
       \A
       G\)\s?
-      (?:
+      (?<all>
+        SFC|
+        GND|
         (?<value>\d+)\s?(?<unit>FT|M)\s?(?<base>AMSL|AGL)|
         (?<unit>FL)\s?(?<value>\d+)
       )
@@ -15,7 +17,11 @@ module NOTAM
 
     # @return [AIXM::Z]
     def lower_limit
-      limit(*captures.values_at('value', 'unit', 'base'))
+      if %w(SFC GND).include?(captures['all'])
+        AIXM::GROUND
+      else
+        limit(*captures.values_at('value', 'unit', 'base'))
+      end
     end
 
     def valid?
