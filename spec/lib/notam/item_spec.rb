@@ -22,13 +22,13 @@ describe NOTAM::Item do
       _(NOTAM::Item.item_class('Q) test')).must_equal 'Q'
     end
 
-    it "fails for everything else" do
-      _{ NOTAM::Item.item_class('X) test') }.must_raise ArgumentError
-      _{ NOTAM::Item.item_class('a) test') }.must_raise ArgumentError
-      _{ NOTAM::Item.item_class('a] test') }.must_raise ArgumentError
-      _{ NOTAM::Item.item_class(' A) test') }.must_raise ArgumentError
-      _{ NOTAM::Item.item_class('test') }.must_raise ArgumentError
-      _{ NOTAM::Item.item_class('') }.must_raise ArgumentError
+    it "returns nil for everything else" do
+      _(NOTAM::Item.item_class('X) test')).must_be :nil?
+      _(NOTAM::Item.item_class('a) test')).must_be :nil?
+      _(NOTAM::Item.item_class('a] test')).must_be :nil?
+      _(NOTAM::Item.item_class(' A) test')).must_be :nil?
+      _(NOTAM::Item.item_class('test')).must_be :nil?
+      _(NOTAM::Item.item_class('')).must_be :nil?
     end
   end
 end

@@ -30,10 +30,10 @@ module NOTAM
       # Detect the item class
       #
       # @example
-      #   NOTAM::Item.parse('foobar')            # => ArgumentError
       #   NOTAM::Item.parse('A0135/20 NOTAMN')   # => NOTAM::Header
       #   NOTAM::Item.parse('B) 0208231540')     # => Notam::B
       #   NOTAM::Item.parse('SOURCE: LFNT')      # => Notam::Footer
+      #   NOTAM::Item.parse('foobar')            # => nil
       #
       # @return [String] item class
       def item_class(content)
@@ -41,7 +41,6 @@ module NOTAM
           when /\A([A-GQ])\)/ then $1
           when NOTAM::Header::RE then 'Header'
           when NOTAM::Footer::RE then 'Footer'
-          else fail(ArgumentError, 'format not recognized')
         end
       end
     end
