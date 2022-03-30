@@ -15,6 +15,7 @@ module NOTAM
       time(captures['effective_at'])
     end
 
+    # @return [Boolean] +true+ if this message is valid
     def valid?
       super
     end

@@ -15,6 +15,7 @@ module NOTAM
       captures['locations'].split(/\s/)
     end
 
+    # @return [Boolean] +true+ if this message is valid
     def valid?
       super
     end

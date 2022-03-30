@@ -23,6 +23,7 @@ module NOTAM
       end
     end
 
+    # @return [Boolean] +true+ if this message is valid
     def valid?
       super
     end

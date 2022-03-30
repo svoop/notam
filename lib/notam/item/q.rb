@@ -63,6 +63,7 @@ module NOTAM
       AIXM.z(captures['upper_limit'].to_i, :qne)
     end
 
+    # @return [Boolean] +true+ if this message is valid
     def valid?
       super
     end

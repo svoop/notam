@@ -28,6 +28,7 @@ module NOTAM
       captures['permanent'] == 'PERM'
     end
 
+    # @return [Boolean] +true+ if this message is valid
     def valid?
       super
     end
