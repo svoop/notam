@@ -4,8 +4,8 @@ module NOTAM
   class Factory
     class << self
 
-      def head
-        @head ||= {
+      def header
+        @header ||= {
           new: 'A0135/20 NOTAMN',
           replace: 'A0137/20 NOTAMR A0135/20',
           cancel: 'A0139/20 NOTAMC A0137/20'
@@ -75,8 +75,15 @@ module NOTAM
         }
       end
 
+      def footer
+        @footer ||= {
+          created: 'CREATED: 10 Feb 2022 07:00:00',
+          source: 'SOURCE: LSSNYNYX'
+        }
+      end
+
       def sample_message
-        %i(head q a b c d e f g).map { send(_1).values.sample }.join("\n")
+        %i(header q a b c d e f g footer).map { send(_1).values.sample }.join("\n")
       end
 
     end

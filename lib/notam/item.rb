@@ -30,15 +30,17 @@ module NOTAM
       # Detect the item class
       #
       # @example
-      #   NOTAM::Item.parse('A0135/20 NOTAMN')   # => "Head"
-      #   NOTAM::Item.parse('B) 0208231540')     # => "B"
       #   NOTAM::Item.parse('foobar')            # => ArgumentError
+      #   NOTAM::Item.parse('A0135/20 NOTAMN')   # => NOTAM::Header
+      #   NOTAM::Item.parse('B) 0208231540')     # => Notam::B
+      #   NOTAM::Item.parse('SOURCE: LFNT')      # => Notam::Footer
       #
       # @return [String] item class
       def item_class(content)
         case content
           when /\A([A-GQ])\)/ then $1
-          when NOTAM::Head::RE then 'Head'
+          when NOTAM::Header::RE then 'Header'
+          when NOTAM::Footer::RE then 'Footer'
           else fail(ArgumentError, 'format not recognized')
         end
       end
@@ -74,7 +76,11 @@ module NOTAM
     end
 
     def truncated_content(start: 3, length: 40)
-      content.length > length + start ? content[start, length-1] + '…' : content
+      if content.length > start + length - 1
+        content[start, length - 1] + '…'
+      else
+        content[start..]
+      end
     end
 
   end

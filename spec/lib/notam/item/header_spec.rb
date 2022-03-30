@@ -2,9 +2,9 @@
 
 require_relative '../../../spec_helper'
 
-describe NOTAM::Head do
+describe NOTAM::Header do
   subject do
-    NOTAM::Factory.head.transform_values do |value|
+    NOTAM::Factory.header.transform_values do |value|
       NOTAM::Item.parse(value)
     end
   end

@@ -4,9 +4,15 @@ require_relative '../../spec_helper'
 
 describe NOTAM::Item do
   describe :item_class do
-    it "detects head" do
-      NOTAM::Factory.head.values.each do |subject|
-        _(NOTAM::Item.item_class(subject)).must_equal 'Head'
+    it "detects header" do
+      NOTAM::Factory.header.values.each do |subject|
+        _(NOTAM::Item.item_class(subject)).must_equal 'Header'
+      end
+    end
+
+    it "detects footer" do
+      NOTAM::Factory.footer.values.each do |subject|
+        _(NOTAM::Item.item_class(subject)).must_equal 'Footer'
       end
     end
 
