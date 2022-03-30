@@ -22,3 +22,5 @@ class MiniTest::Spec
     alias_method :context, :describe
   end
 end
+
+I18n.locale = :en

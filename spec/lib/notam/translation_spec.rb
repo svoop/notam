@@ -118,8 +118,16 @@ describe NOTAM do
       _(NOTAM.expand('ABV')).must_equal :above
     end
 
-    it "fails on unknown contractions" do
-      _{ NOTAM.purpose_for('XXX') }.must_raise KeyError
+    it "returns nil when expanding unknown contractions" do
+      _(NOTAM.expand('XXX')).must_be :nil?
+    end
+
+    it "translates known contractions" do
+      _(NOTAM.expand('ABV', translate: true)).must_equal 'above'
+    end
+
+    it "returns nil when translating unknown contractions" do
+      _(NOTAM.expand('XXX', translate: true)).must_be :nil?
     end
   end
 

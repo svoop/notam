@@ -86,12 +86,17 @@ module NOTAM
       SCOPES.fetch(code)
     end
 
-    # Expands the NOTAM contraction to human/machine readable symbol
+    # Expands and optionally translates the NOTAM contraction
     #
     # @param contraction [String] approved NOTAM contraction
-    # @return [Symbol] value from {NOTAM::CONTRACTIONS}
-    def expand(contraction)
-      CONTRACTIONS.fetch(contraction)
+    # @param translate [Boolean] returns expanded and translated String when
+    #   +true+ or expanded only Symbol otherwise (default)
+    # @return [Symbol, String, nil] expansion from {NOTAM::CONTRACTIONS},
+    #   translation or +nil+
+    def expand(contraction, translate: false)
+      if expansion = CONTRACTIONS[contraction]
+        translate ? I18n.t("contractions.#{expansion}", default: nil) : expansion
+      end
     end
   end
 
@@ -1058,6 +1063,7 @@ module NOTAM
     'WEF' => :with_effect_from_or_effective_from,
     'WI' => :within,
     'WIE' => :with_immediate_effect_or_effective_immediately,
+    'WIP' => :work_in_progress,
     'WKDAYS' => :monday_through_friday,
     'WKEND' => :saturday_and_sunday,
     'WND' => :wind,
