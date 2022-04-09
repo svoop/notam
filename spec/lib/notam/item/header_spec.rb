@@ -5,13 +5,31 @@ require_relative '../../../spec_helper'
 describe NOTAM::Header do
   subject do
     NOTAM::Factory.header.transform_values do |value|
-      NOTAM::Item.parse(value)
+      NOTAM::Item.new(value).parse
     end
   end
 
   describe :id do
     it "returns the message ID" do
       _(subject[:new].id).must_equal 'A0135/20'
+    end
+  end
+
+  describe :id_series do
+    it "returns the series letter" do
+      _(subject[:new].id_series).must_equal 'A'
+    end
+  end
+
+  describe :id_number do
+    it "returns the serial number" do
+      _(subject[:new].id_number).must_equal 135
+    end
+  end
+
+  describe :id_year do
+    it "returns the year identifer" do
+      _(subject[:new].id_year).must_equal 2020
     end
   end
 
@@ -39,18 +57,11 @@ describe NOTAM::Header do
     end
   end
 
-  describe :valid? do
-    it "flags correct message as valid" do
-      subject.each_value { _(_1).must_be :valid? }
-    end
-
-    it "flags new message with old ID as invalid" do
-      _(NOTAM::Item.parse('A0137/20 NOTAMN A0135/20')).wont_be :valid?
-    end
-
-    it "flags replacing/cancelling message without old ID as invalid" do
-      _(NOTAM::Item.parse('A0137/20 NOTAMR')).wont_be :valid?
-      _(NOTAM::Item.parse('A0137/20 NOTAMC')).wont_be :valid?
+  describe :parse do
+    it "fails on incorrect message" do
+      _{ NOTAM::Item.new('A0137/20 NOTAMN A0135/20').parse }.must_raise NOTAM::ParseError
+      _{ NOTAM::Item.new('A0137/20 NOTAMR').parse }.must_raise NOTAM::ParseError
+      _{ NOTAM::Item.new('A0137/20 NOTAMC').parse }.must_raise NOTAM::ParseError
     end
   end
 end

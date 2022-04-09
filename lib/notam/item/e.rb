@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module NOTAM
+
+  # The E item contains a textual description of what this NOTAM is all about.
   class E < Item
 
     RE = %r(
@@ -20,9 +22,9 @@ module NOTAM
       end.join
     end
 
-    # @return [Boolean] +true+ if this message is valid
-    def valid?
-      super
+    # @see NOTAM::Item#merge
+    def merge
+      super(:content, :translated_content)
     end
 
   end

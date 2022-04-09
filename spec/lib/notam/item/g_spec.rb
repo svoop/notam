@@ -5,7 +5,7 @@ require_relative '../../../spec_helper'
 describe NOTAM::G do
   subject do
     NOTAM::Factory.g.transform_values do |value|
-      NOTAM::Item.parse(value)
+      NOTAM::Item.new(value).parse
     end
   end
 
@@ -37,16 +37,6 @@ describe NOTAM::G do
 
     it "returns AIXM::GROUND for GND" do
       _(subject[:gnd].lower_limit).must_equal AIXM::GROUND
-    end
-  end
-
-  describe :valid? do
-    it "flags correct message as valid" do
-      subject.each_value { _(_1).must_be :valid? }
-    end
-
-    it "flags incorrect message as invalid" do
-      _(NOTAM::Item.parse('C) foobar')).wont_be :valid?
     end
   end
 end

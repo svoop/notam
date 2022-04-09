@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module NOTAM
+
+  # The C item defines when the NOTAM expires.
   class C < Item
 
     RE = %r(
@@ -28,9 +30,9 @@ module NOTAM
       captures['permanent'] == 'PERM'
     end
 
-    # @return [Boolean] +true+ if this message is valid
-    def valid?
-      super
+    # @see NOTAM::Item#merge
+    def merge
+      super(:expiration_at, :estimated_expiration?, :no_expiration?)
     end
 
   end

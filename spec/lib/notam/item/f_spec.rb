@@ -5,7 +5,7 @@ require_relative '../../../spec_helper'
 describe NOTAM::F do
   subject do
     NOTAM::Factory.f.transform_values do |value|
-      NOTAM::Item.parse(value)
+      NOTAM::Item.new(value).parse
     end
   end
 
@@ -33,16 +33,6 @@ describe NOTAM::F do
 
     it "returns AIXM::UNLIMITED for UNL" do
       _(subject[:unl].upper_limit).must_equal AIXM::UNLIMITED
-    end
-  end
-
-  describe :valid? do
-    it "flags correct message as valid" do
-      subject.each_value { _(_1).must_be :valid? }
-    end
-
-    it "flags incorrect message as invalid" do
-      _(NOTAM::Item.parse('C) foobar')).wont_be :valid?
     end
   end
 end

@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 module NOTAM
+
+  # The G item defines the lower limit for this NOTAM.
   class G < Item
 
     RE = %r(
       \A
       G\)\s?
       (?<all>
-        SFC|
-        GND|
+        SFC|GND|UNL|
         (?<value>\d+)\s?(?<unit>FT|M)\s?(?<base>AMSL|AGL)|
         (?<unit>FL)\s?(?<value>\d+)
       )
@@ -17,16 +18,16 @@ module NOTAM
 
     # @return [AIXM::Z]
     def lower_limit
-      if %w(SFC GND).include?(captures['all'])
-        AIXM::GROUND
-      else
-        limit(*captures.values_at('value', 'unit', 'base'))
+      case captures['all']
+        when 'UNL' then AIXM::UNLIMITED
+        when 'SFC', 'GND' then AIXM::GROUND
+        else limit(*captures.values_at('value', 'unit', 'base'))
       end
     end
 
-    # @return [Boolean] +true+ if this message is valid
-    def valid?
-      super
+    # @see NOTAM::Item#merge
+    def merge
+      super(:lower_limit)
     end
 
   end

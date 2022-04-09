@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module NOTAM
+
+  # The footer items contain meta information.
   class Footer < Item
 
     RE = %r(
@@ -23,9 +25,15 @@ module NOTAM
       end
     end
 
-    # @return [Boolean] +true+ if this message is valid
-    def valid?
-      super
+    # @see NOTAM::Item#merge
+    def merge
+      data[key] = value
+      self
+    end
+
+    # @return [String]
+    def inspect
+      %Q(#<#{self.class} "#{truncated_text(start: 0)}">)
     end
 
   end

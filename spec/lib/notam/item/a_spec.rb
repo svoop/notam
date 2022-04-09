@@ -5,7 +5,7 @@ require_relative '../../../spec_helper'
 describe NOTAM::A do
   subject do
     NOTAM::Factory.a.transform_values do |value|
-      NOTAM::Item.parse(value)
+      NOTAM::Item.new(value).parse
     end
   end
 
@@ -19,13 +19,23 @@ describe NOTAM::A do
     end
   end
 
-  describe :valid? do
-    it "flags correct message as valid" do
-      subject.each_value { _(_1).must_be :valid? }
+  describe :part_index do
+    it "detects multipart NOTAM index" do
+      _(subject[:checklist].part_index).must_equal 1
     end
 
-    it "flags incorrect message as invalid" do
-      _(NOTAM::Item.parse('A) foobar')).wont_be :valid?
+    it "returns 1 for non-multipart NOTAM" do
+      _(subject[:egll].part_index).must_equal 1
+    end
+  end
+
+  describe :part_index_max do
+    it "detects multipart NOTAM max index" do
+      _(subject[:checklist].part_index_max).must_equal 5
+    end
+
+    it "returns 1 for non-multipart NOTAM" do
+      _(subject[:egll].part_index_max).must_equal 1
     end
   end
 end

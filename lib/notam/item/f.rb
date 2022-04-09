@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 module NOTAM
+
+  # The F item defines the upper limit for this NOTAM.
   class F < Item
 
     RE = %r(
       \A
       F\)\s?
       (?<all>
-        UNL|
+        SFC|GND|UNL|
         (?<value>\d+)\s?(?<unit>FT|M)\s?(?<base>AMSL|AGL)|
         (?<unit>FL)\s?(?<value>\d+)
       )
@@ -16,16 +18,16 @@ module NOTAM
 
     # @return [AIXM::Z]
     def upper_limit
-      if captures['all'] == 'UNL'
-        AIXM::UNLIMITED
-      else
-        limit(*captures.values_at('value', 'unit', 'base'))
+      case captures['all']
+        when 'UNL' then AIXM::UNLIMITED
+        when 'SFC', 'GND' then AIXM::GROUND
+        else limit(*captures.values_at('value', 'unit', 'base'))
       end
     end
 
-    # @return [Boolean] +true+ if this message is valid
-    def valid?
-      super
+    # @see NOTAM::Item#merge
+    def merge
+      super(:upper_limit)
     end
 
   end

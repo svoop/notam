@@ -5,7 +5,7 @@ require_relative '../../../spec_helper'
 describe NOTAM::Footer do
   subject do
     NOTAM::Factory.footer.transform_values do |value|
-      NOTAM::Item.parse(value)
+      NOTAM::Item.new(value).parse
     end
   end
 
@@ -23,16 +23,6 @@ describe NOTAM::Footer do
 
     it "returns plain text for other keys" do
       _(subject[:source].value).must_equal 'LSSNYNYX'
-    end
-  end
-
-  describe :valid? do
-    it "flags correct message as valid" do
-      subject.each_value { _(_1).must_be :valid? }
-    end
-
-    it "flags incorrect message as invalid" do
-      _(NOTAM::Item.parse('C) foobar')).wont_be :valid?
     end
   end
 end

@@ -460,6 +460,7 @@ module NOTAM
     'IW' => :microwave_landing_system,
     'IX' => :locator_outer,
     'IY' => :locator_middle,
+    'KK' => :checklist,
     'LA' => :approach_lighting_system,
     'LB' => :aerodrome_beacon,
     'LC' => :runway_centre_line_lights,
@@ -574,7 +575,8 @@ module NOTAM
     'WV' => :formation_flight,
     'WW' => :volcanic_activity,
     'WY' => :aerial_survey,
-    'WZ' => :model_flying
+    'WZ' => :model_flying,
+    'XX' => :other
   }.freeze
 
   # International NOTAM Q codes for conditions
@@ -639,6 +641,7 @@ module NOTAM
     'HX' => :concentration_of_birds,
     'HY' => :snow_banks_exist,
     'HZ' => :covered_by_frozen_ruts,
+    'KK' => :checklist,
     'LA' => :operating_on_auxiliary_power_supply,
     'LB' => :reserved_for_aircraft_based_therein,
     'LC' => :closed,
@@ -658,14 +661,16 @@ module NOTAM
     'LV' => :closed_to_vfr_operations,
     'LW' => :will_take_place,
     'LX' => :operating_but_caution_advised,
+    'TT' => :trigger,
     'XX' => :other
   }.freeze
 
   # Kinds of traffic
   TRAFFIC = {
+    'IV' => :ifr_and_vfr,
     'I' => :ifr,
     'V' => :vfr,
-    'IV' => :ifr_and_vfr
+    'K' => :checklist
   }.freeze
 
   # Purpose identifiers

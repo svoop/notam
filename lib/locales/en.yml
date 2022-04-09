@@ -371,6 +371,7 @@ en:
     microwave_landing_system: "microwave landing system (MLS)"
     locator_outer: "locator outer (ILS)"
     locator_middle: "locator middle (ILS)"
+    checklist: "checklist of NOTAM"
     approach_lighting_system: "approach lighting system"
     aerodrome_beacon: "aerodrome beacon"
     runway_centre_line_lights: "runway centre line lights"
@@ -486,6 +487,7 @@ en:
     volcanic_activity: "significant volcanic activity"
     aerial_survey: "aerial survey"
     model_flying: "model flying"
+    other: "other"
   conditions:
     withdrawn_for_maintenance: "withdrawn for maintenance"
     available_for_daylight_operation: "available for daylight operation"
@@ -545,6 +547,7 @@ en:
     concentration_of_birds: "concentration of birds"
     snow_banks_exist: "snow banks exist"
     covered_by_frozen_ruts: "covered by frozen ruts and ridges"
+    checklist: "checklist of NOTAM"
     operating_on_auxiliary_power_supply: "operating on auxiliary power supply"
     reserved_for_aircraft_based_therein: "reserved for aircraft based therein"
     closed: "closed"
@@ -564,11 +567,13 @@ en:
     closed_to_vfr_operations: "closed to VFR operations"
     will_take_place: "will take place"
     operating_but_caution_advised: "operating but caution advised"
+    trigger: "trigger NOTAM"
     other: "other subject as specified in plain language"
   traffic:
+      ifr_and_vfr: "IFR and VFR"
       ifr: "IFR"
       vfr: "VFR"
-      ifr_and_vfr: "IFR and VFR"
+      checklist: "checklist of NOTAM"
   purposes:
       immediate_attention: "immediate attention of flight crews"
       operational_significance: "operational significance (PIB entry)"

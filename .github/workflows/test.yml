@@ -18,4 +18,4 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Run tests
-      run: bundle exec rake
+      run: SPEC_SCOPE=all bundle exec rake

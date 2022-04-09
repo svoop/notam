@@ -5,7 +5,7 @@ require_relative '../../../spec_helper'
 describe NOTAM::C do
   subject do
     NOTAM::Factory.c.transform_values do |value|
-      NOTAM::Item.parse(value)
+      NOTAM::Item.new(value).parse
     end
   end
 
@@ -51,16 +51,6 @@ describe NOTAM::C do
 
     it "detects permanent NOTAM as permanent" do
       _(subject[:permanent]).must_be :no_expiration?
-    end
-  end
-
-  describe :valid? do
-    it "flags correct message as valid" do
-      subject.each_value { _(_1).must_be :valid? }
-    end
-
-    it "flags incorrect message as invalid" do
-      _(NOTAM::Item.parse('C) foobar')).wont_be :valid?
     end
   end
 end

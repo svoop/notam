@@ -5,7 +5,11 @@ require 'i18n'
 require 'countries'
 
 require_relative "notam/version"
+require_relative "notam/errors"
 require_relative "notam/translation"
+
+require_relative "notam/message"
+require_relative "notam/schedule"
 
 require_relative "notam/item"
 require_relative "notam/item/header"

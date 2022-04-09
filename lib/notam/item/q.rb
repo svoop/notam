@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module NOTAM
+
+  # The Q item provides the context such as the FIR or conditions.
   class Q < Item
 
     RE = %r(
@@ -8,12 +10,14 @@ module NOTAM
       Q\)\s?
       (?<fir>#{ICAO_RE})/
       Q(?<subject>[A-Z]{2})(?<condition>[A-Z]{2})/
-      (?<traffic>I|V|IV)/
-      (?<purpose>NBO|BO|M|K)/
-      (?<scope>A|AE|AW|E|W|K)/
+      (?<traffic>IV|(?:[IVK]\s?))/
+      (?<purpose>NBO|BO\s?|(?:[BMK]\s{0,2}))/
+      (?<scope>A[EW]|(?:[AEWK]\s?))/
       (?<lower_limit>\d{3})/
       (?<upper_limit>\d{3})/
-      (?<latitude>\d{4}[NS])(?<longitude>\d{5}[EW])(?<radius>\d{3})
+      (?<lat_deg>\d{2})(?<lat_min>\d{2})(?<lat_dir>[NS])
+      (?<long_deg>\d{3})(?<long_min>\d{2})(?<long_dir>[EW])
+      (?<radius>\d{3})
       \z
     )x.freeze
 
@@ -34,17 +38,17 @@ module NOTAM
 
     # @return [Symbol]
     def traffic
-      NOTAM.traffic_for(captures['traffic'])
+      NOTAM.traffic_for(captures['traffic'].strip)
     end
 
     # @return [Array<Symbol>]
     def purpose
-      captures['purpose'].chars.map { NOTAM.purpose_for(_1) }
+      captures['purpose'].strip.chars.map { NOTAM.purpose_for(_1) }
     end
 
     # @return [Array<Symbol>]
     def scope
-      captures['scope'].chars.map { NOTAM.scope_for(_1) }
+      captures['scope'].strip.chars.map { NOTAM.scope_for(_1) }
     end
 
     # @return [AIXM::Z] lower limit (QNE flight level) or {AIXM::GROUND}
@@ -63,9 +67,22 @@ module NOTAM
       AIXM.z(captures['upper_limit'].to_i, :qne)
     end
 
-    # @return [Boolean] +true+ if this message is valid
-    def valid?
-      super
+    # @return [AIXM::XY] approximately affected area center point
+    def center_point
+      AIXM.xy(
+        lat: %Q(#{captures['lat_deg']}°#{captures['lat_min']}'00"#{captures['lat_dir']}),
+        long: %Q(#{captures['long_deg']}°#{captures['long_min']}'00"#{captures['long_dir']})
+      )
+    end
+
+    # @return [AIXM::D] approximately affected area radius
+    def radius
+      AIXM.d(captures['radius'].to_i, :nm)
+    end
+
+    # @see NOTAM::Item#merge
+    def merge
+      super(:fir, :subject, :condition, :traffic, :purpose, :scope, :lower_limit, :upper_limit, :center_point, :radius)
     end
 
   end

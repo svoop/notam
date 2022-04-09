@@ -4,6 +4,22 @@ module NOTAM
   class Factory
     class << self
 
+      def message
+        <<~END
+          A0135/20 NOTAMN
+          Q) EGTT/QMRXX/IV/NBO/A/000/999/5129N00028W005
+          A) EGLL
+          B) 0201010600
+          C) 0203312300
+          D) MON-WED FRI SR MINUS15-1130 EXC 01-02 FEB 01-02 MAR 01-02
+          E) RWY 09R/27L DUE WIP NO CENTRELINE, TDZ OR SALS LIGHTING AVBL
+          F) 2000 FT AMSL
+          G) 2050 FT AMSL
+          CREATED: 01 Jan 2002 01:00:00
+          SOURCE: LSSNYNYX
+        END
+      end
+
       def header
         @header ||= {
           new: 'A0135/20 NOTAMN',
@@ -14,14 +30,16 @@ module NOTAM
 
       def q
         @q ||= {
-          egtt: 'Q) EGTT/QMRXX/IV/NBO/A/000/999/5129N00028W005'
+          egtt: 'Q) EGTT/QMRXX/IV/NBO/AE/000/999/5129N00028W005',
+          lfnt: 'Q) LFNT/QMRXX/V /M  /A /000/999/4359N00445E001'
         }
       end
 
       def a
         @a ||= {
           egll: 'A) EGLL',
-          lsas: 'A) LSAS LOVV LIMM'
+          lsas: 'A) LSAS LOVV LIMM',
+          checklist: 'A) LSAS PART 1 OF 5'
         }
       end
 
@@ -42,6 +60,15 @@ module NOTAM
 
       def d
         @d ||= {
+          two_months: 'D) FEB 08-28 2000-2200, MAR 01-05 1800-2200',
+          one_month: 'D) 16 23 H24, 19 21-24 28 0600-1700',
+          weekdays: 'D) MON-FRI 0700-1100 1300-1700',
+          date_with_exception: 'D) FEB 01-MAR 31 0700-1100 EXC FRI',
+          day_with_exception: 'D) MON-TUE 0700-1900 EXC FEB 15',
+          hours: 'D) DAILY 2200-0500',
+          daytime: 'D) SR-SS',
+          sun_to_hour: 'D) SR MINUS30-1500',
+          hour_to_sun: 'D) 1000-SS PLUS30'
         }
       end
 
@@ -86,8 +113,12 @@ module NOTAM
         }
       end
 
-      def sample_message
-        %i(header q a b c d e f g footer).map { send(_1).values.sample }.join("\n")
+      def schedule
+        @schedule ||= {
+          date_with_exception: 'FEB 01-MAR 31 0700-1100 EXC FRI',
+          day_with_exception: 'MON-TUE 0700-1900 EXC FEB 15',
+          daytime: 'SR-SS'
+        }
       end
 
     end

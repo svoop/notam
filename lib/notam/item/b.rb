@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module NOTAM
+
+  # The B item defines when the NOTAM goes into effect.
   class B < Item
 
     RE = %r(
@@ -15,9 +17,9 @@ module NOTAM
       time(captures['effective_at'])
     end
 
-    # @return [Boolean] +true+ if this message is valid
-    def valid?
-      super
+    # @see NOTAM::Item#merge
+    def merge
+      super(:effective_at)
     end
 
   end
