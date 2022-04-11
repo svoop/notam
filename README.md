@@ -60,10 +60,29 @@ notam.estimated_expiration?   # => true
 
 See the [API documentation](https://www.rubydoc.info/gems/notam) for more.
 
-## References
+⚠️ Only NOTAMs compatible with the ICAO annex 15 are supported for now. Most notably in the USA other NOTAM formats exist which cannot be parsed using this gem.
+
+### FIR
+
+Four letter FIR codes assigned by the ICAO follow some logic, albeit there exist exceptions and inconsistencies e.g. for historical reasons. Let's take an easy example:
+
+```
+L F M M
+┬ ┬ ─┬─
+│ │  └─ global area: L => lower Europe
+│ └──── geopolitical unit: F => France
+└────── subsection: MM => Marseille
+```
+
+The informal use of only the first two letters often stands for a combination of all subsections contained therein. Example: `LF` is a combination of `LFBB`, `LFEE`, `LFFF`, `LFMM` and `LFRR`.
+
+FIR codes ending with `XX` specify more than one subsection. Example: `LFXX` is a combination of two subsections with in `LF`. In NOTAMs, this notation may be used on the Q item if (and only if) the affected subsections are listed on the A item.
+
+### References
 
 * [ICAO Annex 15 on NOTAM](https://www.bazl.admin.ch/bazl/en/home/specialists/regulations-and-guidelines/legislation-and-directives/anhaenge-zur-konvention-der-internationalen-zivilluftfahrtorgani.html)
 * [NOTAM Q Codes](https://www.faa.gov/air_traffic/publications/atpubs/notam_html/appendix_b.html)
+* [Guide de la consultation NOTAM (fr)](https://www.sia.aviation-civile.gouv.fr/pub/media/news/file/g/u/guide_de_la_consultation_notam_05-10-2017-1.pdf)
 * [NOTAM Contractions](https://www.notams.faa.gov/downloads/contractions.pdf)
 * [NOTAM format cheat sheet](http://vat-air.dk/files/ICAO%20NOTAM%20format.pdf)
 * [Introduction on Wikipedia](https://en.wikipedia.org/wiki/NOTAM)

@@ -3,38 +3,18 @@
 module NOTAM
 
   class << self
-    # ICAO FIR wildcard savvy drop-in replacement for +I18n::t+
-    #
-    # @example
-    #   NOTAM.t('firs.LFRR')   # => "Brest ACC"
-    #   NOTAM.t('firs.LFXX')   # => "Bordeaux ACC, Reims ACC, (...)"
-    #
-    # @see I18n::t
-    def t(key, **arguments)
-      if /^firs\.([A-Z]{4})$/.match key
-        resolve_fir($1).map { I18n.t("firs.#{_1}") }. join(', ')
-      else
-        I18n.t(key, **arguments)
-      end
-    end
 
-    # Resolve ICAO FIR (wildcard) identifier to array of individual identifiers
+    # Expand informal two letter ICAO FIR identifier.
     #
     # @example
-    #   NOTAM.expand_fir('LFRR')   # => ["LFRR"]
-    #   NOTAM.expand_fir('LFXX')   # => ["LFBB", "LFEE", "LFFF", "LFMM", "LFRR"]
-    #   NOTAM.expand_fir('XXXX')   # => ArgumentError
+    #   NOTAM.expand_fir('LF')   # => ["LFBB", "LFEE", "LFFF", "LFMM", "LFRR", "LFXX]
     #
-    # @param fir [String] four letter ICAO FIR identifier
-    # @return [Array<String>] expanded four letter ICAO FIR identifiers
-    def resolve_fir(fir)
-      if /([A-Z]{2})XX$/.match fir
-        FIRS.keys.select { _1.start_with? $1 }.tap do |firs|
-          fail(ArgumentError, "unknown wildcard FIR") unless firs.any?
-        end
-      else
-        fail(ArgumentError, "unknown FIR") unless FIRS.has_key?(fir)
-        [fir]
+    # @param fir [String] informal two letter ICAO FIR identifier
+    # @return [Array<String>] four letter ICAO FIR identifiers
+    def expand_fir(informal_fir)
+      FIRS.keys.select { _1.start_with? informal_fir }.tap do |firs|
+        fail(ArgumentError, "unknown wildcard FIR") unless firs.any?
+        firs << "#{informal_fir}XX"
       end
     end
 
@@ -43,7 +23,7 @@ module NOTAM
     # @param fir [String] four letter ICAO FIR identifier
     # @return [Array<Symbol>] array of country ISO alpha 2 codes
     def countries_for(fir)
-      resolve_fir(fir).reduce([]) { |m, f| m + FIRS.fetch(f) }.uniq
+      FIRS.fetch(fir)
     end
 
     # Translates the NOTAM subject code to human/machine readable symbol

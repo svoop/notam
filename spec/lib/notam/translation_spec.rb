@@ -3,35 +3,13 @@
 require_relative '../../spec_helper'
 
 describe NOTAM do
-  describe :t do
-    it "translates individual FIR" do
-      _(NOTAM.t('firs.LFRR')).must_equal "Brest ACC"
+  describe :expand_fir do
+    it "returns array of FIRs" do
+      _(NOTAM.expand_fir('LF')).must_equal %w(LFBB LFEE LFFF LFMM LFRR LFXX)
     end
 
-    it "translates wildcard FIR" do
-      _(NOTAM.t('firs.LFXX')).must_equal "Bordeaux ACC, Reims ACC, Paris ACC, Marseille ACC, Brest ACC"
-    end
-
-    it "translates anything else like I18n::t" do
-      _(NOTAM.t('subjects.minimum_altitude')).must_equal "minimum altitude"
-    end
-  end
-
-  describe :resolve_fir do
-    it "returns array with individual FIR" do
-      _(NOTAM.resolve_fir('LFRR')).must_equal %w(LFRR)
-    end
-
-    it "fails on unknown individual FIR" do
-      _{ NOTAM.resolve_fir('YYYY') }.must_raise ArgumentError
-    end
-
-    it "returns array with resolved FIRs" do
-      _(NOTAM.resolve_fir('LFXX')).must_equal %w(LFBB LFEE LFFF LFMM LFRR)
-    end
-
-    it "fails to resolve unknown wildcard FIR" do
-      _{ NOTAM.resolve_fir('YYXX') }.must_raise ArgumentError
+    it "fails on unknown informal FIR" do
+      _{ NOTAM.expand_fir('XX') }.must_raise ArgumentError
     end
   end
 
@@ -41,15 +19,7 @@ describe NOTAM do
     end
 
     it "fails on unknown individual FIR" do
-      _{ NOTAM.countries_for('YYYY') }.must_raise ArgumentError
-    end
-
-    it "returns array of countries for wildcard FIR" do
-      _(NOTAM.countries_for('EDXX')).must_equal %i(DE BE NL)
-    end
-
-    it "fails on unknown wildcard FIR" do
-      _{ NOTAM.countries_for('YYXX') }.must_raise ArgumentError
+      _{ NOTAM.countries_for('XXXX') }.must_raise KeyError
     end
   end
 
