@@ -1,6 +1,7 @@
 ## Main
 
-Nothing so far
+#### Changes
+* Update dependency on AIXM gem
 
 ## 0.1.0
 
