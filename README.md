@@ -119,14 +119,14 @@ Four letter FIR codes assigned by the ICAO follow some logic, albeit there exist
 ```
 L F M M
 ┬ ┬ ─┬─
-│ │  └─ global area: L => lower Europe
+│ │  └─ subsection: MM => Marseille
 │ └──── geopolitical unit: F => France
-└────── subsection: MM => Marseille
+└────── global area: L => lower Europe
 ```
 
 The informal use of only the first two letters often stands for a combination of all subsections contained therein. Example: `LF` is a combination of `LFBB`, `LFEE`, `LFFF`, `LFMM` and `LFRR`.
 
-FIR codes ending with `XX` specify more than one subsection. Example: `LFXX` is a combination of two subsections with in `LF`. In NOTAM, this notation may be used on the Q item if (and only if) the affected subsections are listed on the A item.
+FIR codes ending with `XX` specify more than one subsection. Example: `LFXX` can be any combination of at least two subsections within `LF`. In NOTAM, this notation may be used on the Q item if (and only if) the affected subsections are listed on the A item.
 
 ### Series
 
