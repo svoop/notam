@@ -8,28 +8,33 @@ describe NOTAM::Message do
   end
 
   describe :parse do
-    unless ENV['SPEC_SCOPE'].nil?
-      prepare_fixtures
-      globber = ENV['SPEC_SCOPE'].match?('/') ? ENV['SPEC_SCOPE'].sub(/\//, '_') : '*'
-      fixtures_path.glob("#{globber}.txt") do |fixture|
-        it "parses fixture #{fixture.basename}" do
-          text = fixture.read
-          begin
-            NOTAM::Message.parse(text)
-          rescue => error
-            $debug_info << "Fixture #{fixture.basename}:\n#{text}"
-            if ENV['SPEC_SCOPE'] == 'all-fast'
-              puts nil, nil, "Fast failing on...", error, error.backtrace
-              exit 1
-            else
-              raise error
+    context "fixtures" do
+      unless ENV['SPEC_SCOPE'].nil?
+        prepare_fixtures
+        globber = ENV['SPEC_SCOPE'].match?('/') ? ENV['SPEC_SCOPE'].sub(/\//, '_') : '*'
+        fixtures_path.glob("#{globber}.txt") do |fixture|
+          it "parses fixture #{fixture.basename}" do
+            text = fixture.read
+            message = begin
+              NOTAM::Message.parse(text)
+            rescue => error
+              $debug_info << "Fixture #{fixture.basename}:\n#{text}"
+              if ENV['SPEC_SCOPE'] == 'all-fast'
+                puts nil, nil, "Fast failing on...", error, error.backtrace
+                exit 1
+              else
+                raise error
+              end
             end
+            raw_fingerprints = text.scan(/[QA-G]\)/)
+            parsed_fingerprints = message.items.map(&:type).select { _1.length == 1 }.map { "#{_1})" }
+            _(parsed_fingerprints - raw_fingerprints).must_be :empty?
           end
         end
-      end
-    else
-      it "parses all fixtures" do
-        skip
+      else
+        it "parses all fixtures" do
+          skip
+        end
       end
     end
   end
