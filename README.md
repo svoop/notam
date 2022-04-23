@@ -39,22 +39,72 @@ bundle install --trust-policy MediumSecurity
 
 ```ruby
 raw_notam_text_message = <<~END
-  A1484/02 NOTAMN
-  Q) EGTT/QMRXX/IV/NBO/A/000/999/5129N00028W005
-  A) EGLL
-  B) 0208231540
-  C) 0210310500 EST
-  E) RWY 09R/27L DUE WIP NO CENTRELINE, TDZ OR SALS LIGHTING AVBL
+  W0902/22 NOTAMN
+  Q) LSAS/QRRCA/V/BO/W/000/148/4624N00702E004
+  A) LSAS B) 2204110900 C) 2205131400 EST
+  D) APR 11 SR MINUS15-1900, 20-21 26-28 MAY 03-05 10-12 0530-2100, APR
+  14 22 29 MAY 06 13 0530-1400, APR 19 25 MAY 02 09 0800-2100
+  E) R-AREA LS-R7 HONGRIN ACT DUE TO FRNG.
+  F) GND
+  G) 14800FT AMSL
+  CREATED: 11 Apr 2022 06:10:00
+  SOURCE: LSSNYNYX
 END
 
 notam = NOTAM.parse(raw_notam_text_message)
-notam.valid?  # => true
 notam.data    # => Hash
 ```
 
-Since NOTAM may contain a certain level of redundancy, the parser does some integrity checks, fixes the payload if possible and issues a warning.
+The resulting hash for this example looks as follows:
 
-The resulting hash contains a representation of the NOTAM which can be consumed by other code such as [AIPP](https://rubygems.org/gems/aipp).
+```ruby
+{
+  id: "W0902/22",
+  id_series: "W",
+  id_number: 902,
+  id_year: 2022,
+  new?: true,
+  fir: "LSAS",
+  subject: :restricted_area,
+  condition: :activated,
+  traffic: :vfr,
+  purpose: [:operational_significance, :flight_operations],
+  scope: [:navigation_warning],
+  lower_limit: #<AIXM::Z 14800 ft QNH>,
+  upper_limit: #<AIXM::Z 0 ft QFE>,
+  center_point: #<AIXM::XY 46.40000000N 007.03333333E>,
+  radius: #<AIXM::D 4.0 nm>,
+  locations: ["LSAS"],
+  part_index: 1,
+  part_index_max: 1,
+  effective_at: 2022-04-11 09:00:00 UTC,
+  expiration_at: 2022-05-13 14:00:00 UTC,
+  estimated_expiration?: false,
+  no_expiration?: true,
+  schedules: [
+    #<NOTAM::Schedule actives: [2022-04-11], times: [sunrise-15min..19:00 UTC], inactives: []>,
+    #<NOTAM::Schedule actives: [2022-04-20..2022-04-21, 2022-04-26..2022-04-28, 2022-05-03..2022-05-05, 2022-05-10..2022-05-12], times: [05:30 UTC..21:00 UTC], inactives: []>,
+    #<NOTAM::Schedule actives: [2022-04-14, 2022-04-22, 2022-04-29, 2022-05-06, 2022-05-13], times: [05:30 UTC..14:00 UTC], inactives: []>,
+    #<NOTAM::Schedule actives: [2022-04-19, 2022-04-25, 2022-05-02, 2022-05-09], times: [08:00 UTC..21:00 UTC], inactives: []>
+  ],
+  five_day_schedules: [
+    #<NOTAM::Schedule actives: [2022-04-11], times: [04:35 UTC..19:00 UTC], inactives: []>,
+    #<NOTAM::Schedule actives: [2022-04-14], times: [05:30 UTC..14:00 UTC], inactives: []>
+  ],
+  content: "R-AREA LS-R7 HONGRIN ACT DUE TO FRNG.",
+  translated_content: "R-AREA LS-R7 HONGRIN ACTIVE DUE TO FRNG.",
+  created: 2022-04-11 06:10:00 UTC,
+  source: "LSSNYNYX"
+}
+```
+
+A few highlights to note here:
+
+* Value classes of the [AIXM gem](https://rubygems.org/gems/aixm) are used to ease further processing.
+* Schedules can be pretty complex, therefore a simpler `five_day_schedule` is calculated for the day the NOTAM becomes effective and the four subsequent days. This short term schedule does not contain exceptions nor events such as sunrises anymore. Furthermore, you can calculate different custom sub-schedules using `slice` and `resolve`.
+* Content is processed to `translated_content`. As of now, known english contractions are expanded. Feel free to contribute non-english locale files read by the [I18n gem](https://rubygems.org/gems/i18n).
+
+Since NOTAM may contain a certain level of redundancy, the parser does some integrity checks, fixes the payload if possible and issues a warning.
 
 You get a `NOTAM::ParseError` in case the raw NOTAM text message fails to be parsed. If you're sure the NOTAM is correct, please [submit an issue](#development) or fix the bug and [submit a pull request](#development).
 
