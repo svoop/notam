@@ -109,6 +109,9 @@ module NOTAM
 
     # Resolve all events in {#times} for the given date and geographic location.
     #
+    # @note The resolved times are rounded up (sunrise) or down (sunset) to the
+    #   next 5 minutes.
+    #
     # @see AIXM::Schedule::Time#resolve
     # @param on [AIXM::Date] date
     # @param xy [AIXM::XY] geographic location
@@ -117,9 +120,9 @@ module NOTAM
       resolved_times = times.map do |time|
         case time
         when Range
-          (time.first.resolve(on: on, xy: xy)..time.last.resolve(on: on, xy: xy))
+          (time.first.resolve(on: on, xy: xy, round: 5)..time.last.resolve(on: on, xy: xy, round: 5))
         else
-          time.resolve(on: on, xy: xy)
+          time.resolve(on: on, xy: xy, round: 5)
         end
       end
       self.class.send(:new, actives, Times.new(resolved_times), inactives, base_date: @base_date)

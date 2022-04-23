@@ -75,7 +75,8 @@ describe NOTAM::Schedule do
 
     # See https://aiphub.tower.zone/LF/AIP/GEN-2.7 for official sunrise and sunset
     # tables in UTC. The coordinates are LFPG on latitude 49°N. You have to
-    # subtract 10 minutes to compensate for longitude 2.5°E.
+    # subtract 10 minutes to compensate for longitude 2.5°E. The result is
+    # rounded up (sunrise) or down (sunset) to the next 5 minutes.
     describe :resolve do
       subject do
         NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daytime], base_date: AIXM.date('2025-01-01')).slice(AIXM.date('2025-07-01'))
@@ -86,7 +87,7 @@ describe NOTAM::Schedule do
           on: AIXM.date('2025-07-01'),
           xy: AIXM.xy(lat: 49.01614, long: 2.54423)
         )
-        _(resolved.times).must_equal [AIXM.time('03:49')..AIXM.time('19:57')]
+        _(resolved.times).must_equal [AIXM.time('03:50')..AIXM.time('19:55')]
         _(resolved.actives).must_equal subject.actives
         _(resolved.inactives).must_equal subject.inactives
       end
