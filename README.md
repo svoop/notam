@@ -1,6 +1,6 @@
 [![Version](https://img.shields.io/gem/v/notam.svg?style=flat)](https://rubygems.org/gems/notam)
 [![Tests](https://img.shields.io/github/workflow/status/svoop/notam/Test.svg?style=flat&label=tests)](https://github.com/svoop/notam/actions?workflow=Test)
-[![Code Climate](https://img.shields.io/codeclimate/maintainability/notam/notam.svg?style=flat)](https://codeclimate.com/github/svoop/notam/)
+[![Code Climate](https://img.shields.io/codeclimate/maintainability/svoop/notam.svg?style=flat)](https://codeclimate.com/github/svoop/notam/)
 [![Donorbox](https://img.shields.io/badge/donate-on_donorbox-yellow.svg)](https://donorbox.org/bitcetera)
 
 # NOTAM
