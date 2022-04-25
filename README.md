@@ -26,7 +26,7 @@ gem cert --add <(curl -Ls https://raw.github.com/svoop/notam/main/certs/svoop.pe
 Add the following to the `Gemfile` or `gems.rb` of your [Bundler](https://bundler.io) powered Ruby project:
 
 ```ruby
-gem notam
+gem 'notam'
 ```
 
 And then install the bundle:
@@ -151,18 +151,20 @@ AIS are free to define series as they please, however, a few conventions have em
 
 #### Checklist
 
-Checklist NOTAM are periodically issued lists of all currently effective NOTAM. They are used for cross checking and can usually be ignored for flight planning. Their Q item contain `Q..KK` which is decoded as "condition: :checklist", here's an example:
+Checklist NOTAM are periodically issued lists of all currently effective NOTAM. They are used for cross checking and can usually be ignored for flight planning. Their Q item contain `QKKKK` which is decoded as `condition: :checklist`, here's an example:
 
 ```
 Q) EDXX/QKKKK/K /K  /K /000/999/5123N01018E999
+        ^^^^^
 ```
 
 #### Trigger
 
-Trigger NOTAM are referring to another source of information such as AIP SUP (AIP supplement). Their Q item contain `Q..TT` which is decoded as "condition: :trigger", here's an example:
+Trigger NOTAM are referring to another source of information such as AIP SUP (AIP supplement). Their Q item contain `Q..TT` which is decoded as `condition: :trigger`, here's an example:
 
 ```
 Q) LFXX/QRTTT/IV/BO /W /000/035/4708N00029E010
+        ^  ^^
 ```
 
 Note: Trigger NOTAM are never published as series `T`.
