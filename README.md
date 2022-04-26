@@ -112,6 +112,19 @@ See the [API documentation](https://www.rubydoc.info/gems/notam) for more.
 
 ⚠️ Only NOTAM compatible with the ICAO annex 15 are supported for now. Most notably in the USA other NOTAM formats exist which cannot be parsed using this gem.
 
+### Anatomy of a NOTAM message
+
+A NOTAM message consists of a header followed by the following items:
+
+* [Q item](https://www.rubydoc.info/gems/notam/NOTAM/Q): Essential information such as purpose or center point and radius
+* [A item](https://www.rubydoc.info/gems/notam/NOTAM/A): Affected locations
+* [B item](https://www.rubydoc.info/gems/notam/NOTAM/B): When the NOTAM becomes effective
+* [C item](https://www.rubydoc.info/gems/notam/NOTAM/C): When the NOTAM expires
+* [D item](https://www.rubydoc.info/gems/notam/NOTAM/D): Activity schedules (optional)
+* [E item](https://www.rubydoc.info/gems/notam/NOTAM/E): Free text description
+* [F item](https://www.rubydoc.info/gems/notam/NOTAM/F): Upper limit (optional)
+* [G item](https://www.rubydoc.info/gems/notam/NOTAM/G): Lower limit (optional)
+
 ### FIR
 
 Four letter FIR codes assigned by the ICAO follow some logic, albeit there exist exceptions and inconsistencies e.g. for historical reasons. Let's take an easy example:
