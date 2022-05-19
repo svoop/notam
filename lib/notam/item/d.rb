@@ -28,11 +28,17 @@ module NOTAM
       schedules.any? { _1.active?(at: at, xy: data[:center_point]) }
     end
 
+    # Calculate the relevant, consolidated schedules for five days.
+    #
+    # The beginning of the five day window is either today (if +effective_at+
+    # is in the past) or +effective_at+ (otherwise).
+    #
+    # @return [Array<NOTAM::Schedule>]
     def five_day_schedules
       schedules.map do |schedule|
         schedule
-          .slice(AIXM.date(data[:effective_at]), AIXM.date(data[:effective_at] + 4 * 86_400))
-          .resolve(on: data[:effective_at], xy: data[:center_point])
+          .slice(AIXM.date(five_day_base), AIXM.date(five_day_base + 4 * 86_400))
+          .resolve(on: AIXM.date(five_day_base), xy: data[:center_point])
       end.map { _1 unless _1.empty? }.compact
     end
 
@@ -43,6 +49,12 @@ module NOTAM
 
     private
 
+    # @return [Time]
+    def five_day_base
+      @five_day_base ||= [data[:effective_at], Time.now.utc.round].max
+    end
+
+    # @params string [String] string to clean up
     # @return [String]
     def cleanup(string)
       string

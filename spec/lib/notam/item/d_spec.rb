@@ -91,6 +91,24 @@ describe NOTAM::D do
         _(subject.active?(at: Time.utc(2000, 2, 1, 1, 0))).must_equal false
       end
     end
+
+    describe :five_day_schedules do
+      subject do
+        NOTAM::Item.new(NOTAM::Factory.d[:date_with_exception], data: data).parse
+      end
+
+      it "calculates five day schedules from effective date if it is in the future" do
+        subject.stub(:five_day_base, Time.utc(2000, 1, 30)) do
+          _(subject.five_day_schedules.to_s).must_equal "[#<NOTAM::Schedule actives: [2000-02-01..2000-02-03], times: [07:00 UTC..11:00 UTC], inactives: []>]"
+        end
+      end
+
+      it "calculates five day schedule from now if effective date is in the past" do
+        subject.stub(:five_day_base, Time.utc(2000, 3, 1)) do
+          _(subject.five_day_schedules.to_s).must_equal "[#<NOTAM::Schedule actives: [2000-03-01..2000-03-02, 2000-03-04..2000-03-05], times: [07:00 UTC..11:00 UTC], inactives: []>]"
+        end
+      end
+    end
   end
 
   context 'private' do

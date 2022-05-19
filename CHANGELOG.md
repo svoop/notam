@@ -1,6 +1,8 @@
 ## Main
 
-Nothing so far
+#### Changes
+* The five day schedules are calculated starting today if `effective_at` is
+  in the past.
 
 ## 0.1.1
 
