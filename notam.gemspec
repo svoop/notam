@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 3.0.0'
 
-  spec.add_runtime_dependency 'aixm', '~> 1', '>= 1.2.1'
+  spec.add_runtime_dependency 'aixm', '~> 1', '>= 1.3.0'
   spec.add_runtime_dependency 'i18n', '~> 1'
   spec.add_runtime_dependency 'countries', '~> 4'
 
