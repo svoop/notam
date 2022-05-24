@@ -1,6 +1,7 @@
 ## Main
 
-Nothing so far
+#### Fixes
+* Reverse accidentally flipped F and G item.
 
 ## 0.1.2
 

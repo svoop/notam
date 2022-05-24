@@ -2,7 +2,7 @@
 
 module NOTAM
 
-  # The G item defines the lower limit for this NOTAM.
+  # The G item defines the upper limit for this NOTAM.
   class G < Item
 
     RE = %r(
@@ -17,7 +17,7 @@ module NOTAM
     )x.freeze
 
     # @return [AIXM::Z]
-    def lower_limit
+    def upper_limit
       case captures['all']
         when 'UNL' then AIXM::UNLIMITED
         when 'SFC', 'GND' then AIXM::GROUND
@@ -27,7 +27,7 @@ module NOTAM
 
     # @see NOTAM::Item#merge
     def merge
-      super(:lower_limit)
+      super(:upper_limit)
     end
 
   end

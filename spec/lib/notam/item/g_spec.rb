@@ -9,34 +9,30 @@ describe NOTAM::G do
     end
   end
 
-  describe :lower_limit do
+  describe :upper_limit do
     it "returns QNH value in FT" do
-      _(subject[:qnh].lower_limit).must_equal AIXM.z(2050, :qnh)
+      _(subject[:qnh].upper_limit).must_equal AIXM.z(2050, :qnh)
     end
 
     it "returns QNH value converted from M to FT" do
-      _(subject[:qnh_m].lower_limit).must_equal AIXM.z(3445, :qnh)
+      _(subject[:qnh_m].upper_limit).must_equal AIXM.z(3445, :qnh)
     end
 
     it "returns QFE value in FT" do
-      _(subject[:qfe].lower_limit).must_equal AIXM.z(2150, :qfe)
+      _(subject[:qfe].upper_limit).must_equal AIXM.z(2150, :qfe)
     end
 
     it "returns QFE value converted from M to FT" do
-      _(subject[:qfe_m].lower_limit).must_equal AIXM.z(3773, :qfe)
+      _(subject[:qfe_m].upper_limit).must_equal AIXM.z(3773, :qfe)
     end
 
     it "returns QNE value" do
-      _(subject[:qne].lower_limit).must_equal AIXM.z(150, :qne)
-      _(subject[:qne_space].lower_limit).must_equal AIXM.z(160, :qne)
+      _(subject[:qne].upper_limit).must_equal AIXM.z(150, :qne)
+      _(subject[:qne_space].upper_limit).must_equal AIXM.z(160, :qne)
     end
 
-    it "returns AIXM::GROUND for SFC" do
-      _(subject[:sfc].lower_limit).must_equal AIXM::GROUND
-    end
-
-    it "returns AIXM::GROUND for GND" do
-      _(subject[:gnd].lower_limit).must_equal AIXM::GROUND
+    it "returns AIXM::UNLIMITED for UNL" do
+      _(subject[:unl].upper_limit).must_equal AIXM::UNLIMITED
     end
   end
 end

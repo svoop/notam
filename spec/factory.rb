@@ -89,7 +89,8 @@ module NOTAM
           qfe_m: 'F) 1100 M AGL',
           qne: 'F) FL100',
           qne_space: 'F) FL 110',
-          unl: 'F) UNL'
+          sfc: 'F) SFC',
+          gnd: 'F) GND'
         }
       end
 
@@ -101,8 +102,7 @@ module NOTAM
           qfe_m: 'G) 1150 M AGL',
           qne: 'G) FL150',
           qne_space: 'G) FL 160',
-          sfc: 'G) SFC',
-          gnd: 'G) GND'
+          unl: 'G) UNL'
         }
       end
 
