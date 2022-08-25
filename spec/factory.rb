@@ -68,7 +68,8 @@ module NOTAM
           hours: 'D) DAILY 2200-0500',
           daytime: 'D) SR-SS',
           sun_to_hour: 'D) SR MINUS30-1500',
-          hour_to_sun: 'D) 1000-SS PLUS30'
+          hour_to_sun: 'D) 1000-SS PLUS30',
+          invalid: 'D) 22 0700-1700 23 0430-1800 24 0430-1400'
         }
       end
 

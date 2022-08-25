@@ -59,7 +59,9 @@ describe NOTAM::Header do
 
   describe :parse do
     it "fails on incorrect message" do
-      _{ NOTAM::Item.new('A0137/20 NOTAMN A0135/20').parse }.must_raise NOTAM::ParseError
+      error = _{ NOTAM::Item.new('A0137/20 NOTAMN A0135/20').parse }.must_raise NOTAM::ParseError
+      _(error.item).must_be_instance_of NOTAM::Header
+      _(error.message).must_equal 'invalid Header item: A0137/20 NOTAMN A0135/20'
       _{ NOTAM::Item.new('A0137/20 NOTAMR').parse }.must_raise NOTAM::ParseError
       _{ NOTAM::Item.new('A0137/20 NOTAMC').parse }.must_raise NOTAM::ParseError
     end

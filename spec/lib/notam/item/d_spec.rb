@@ -76,6 +76,13 @@ describe NOTAM::D do
           "#<NOTAM::Schedule actives: [any], times: [10:00 UTC..sunset+30min], inactives: []>"
         ])
       end
+
+      it "fails on invalid timesheet" do
+        subject = NOTAM::Item.new(NOTAM::Factory.d[:invalid], data: data)
+        error = _{ subject.parse }.must_raise NOTAM::ParseError
+        _(error.item).must_be_instance_of NOTAM::D
+        _(error.message).must_equal "invalid D item: D) 22 0700-1700 23 0430-1800 24 0430-1400"
+      end
     end
 
     describe :active? do

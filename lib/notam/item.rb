@@ -91,8 +91,12 @@ module NOTAM
     # @return [self]
     def parse
       if match_data = self.class::RE.match(text)
-        @captures = match_data.named_captures
-        self
+        begin
+          @captures = match_data.named_captures
+          self
+        rescue
+          fail! "invalid #{self.class.to_s.split('::').last} item"
+        end
       else
         fail! 'text does not match regexp'
       end
@@ -124,7 +128,7 @@ module NOTAM
     # @param message [String] optional error message
     # @raise [NOTAM::ParseError]
     def fail!(message=nil)
-      fail(NOTAM::ParseError, [message, text].compact.join(': '))
+      fail ParseError.new([message, text].compact.join(': '), item: self)
     end
 
     # @return [String]

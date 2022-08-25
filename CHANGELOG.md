@@ -1,6 +1,5 @@
 ## Main
-
-Nothing so far
+* Wrap all exceptions raised while parsing items.
 
 ## 0.1.3
 

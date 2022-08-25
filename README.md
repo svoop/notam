@@ -106,7 +106,12 @@ A few highlights to note here:
 
 Since NOTAM may contain a certain level of redundancy, the parser does some integrity checks, fixes the payload if possible and issues a warning.
 
-You get a `NOTAM::ParseError` in case the raw NOTAM text message fails to be parsed. If you're sure the NOTAM is correct, please [submit an issue](#development) or fix the bug and [submit a pull request](#development).
+You get a `NOTAM::ParseError` in case the raw NOTAM text message fails to be parsed. This error object features two notable methods:
+
+* `item` – the faulty item (if already available)
+* `cause` – the underlying error object (if any)
+
+If you're sure the NOTAM is correct, please [submit an issue](#development) or fix the bug and [submit a pull request](#development).
 
 See the [API documentation](https://www.rubydoc.info/gems/notam) for more.
 

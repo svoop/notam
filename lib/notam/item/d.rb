@@ -18,6 +18,8 @@ module NOTAM
         Schedule.parse(string, base_date: base_date)
       end
       self
+    rescue
+      fail! 'invalid D item'
     end
 
     # Whether the D item is active at the given time.

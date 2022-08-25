@@ -59,6 +59,8 @@ module NOTAM
       super
       fail! "invalid operation" unless (new? && !captures['old_id']) || replaces || cancels
       self
+    rescue
+      fail! 'invalid Header item'
     end
 
     # @see NOTAM::Item#merge
