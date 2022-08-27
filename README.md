@@ -197,9 +197,9 @@ For compatibility, schedule dates and times are expressed using the correspondin
 
 ### References
 
-* [ICAO Annex 15 on NOTAM](https://www.bazl.admin.ch/bazl/en/home/specialists/regulations-and-guidelines/legislation-and-directives/anhaenge-zur-konvention-der-internationalen-zivilluftfahrtorgani.html)
+* [ICAO Doc 8126: Aeronautical Information Services Manual](https://www.icao.int/NACC/Documents/eDOCS/AIM/8126_unedited_en%20Jul2021.pdf)
+* [EUROCONTROL Guidelines Operating Procedures AIS Dynamic Data (OPADD)](https://www.eurocontrol.int/sites/default/files/2021-07/eurocontrol-guidelines-opadd-ed4-1.pdf)
 * [NOTAM Q Codes](https://www.faa.gov/air_traffic/publications/atpubs/notam_html/appendix_b.html)
-* [Guide de la consultation NOTAM (fr)](https://www.sia.aviation-civile.gouv.fr/pub/media/news/file/g/u/guide_de_la_consultation_notam_05-10-2017-1.pdf)
 * [NOTAM Contractions](https://www.notams.faa.gov/downloads/contractions.pdf)
 * [NOTAM format cheat sheet](http://vat-air.dk/files/ICAO%20NOTAM%20format.pdf)
 * [Introduction on Wikipedia](https://en.wikipedia.org/wiki/NOTAM)
