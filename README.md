@@ -195,6 +195,13 @@ For compatibility, schedule dates and times are expressed using the correspondin
 * [Day](https://www.rubydoc.info/gems/aixm/AIXM/Schedule/Day)
 * [Time](https://www.rubydoc.info/gems/aixm/AIXM/Schedule/Time)
 
+Raw and parsed NOTAM schedule times differ in how the "end of day" is encoded:
+
+NOTAM  | Beginning of Day | End of Day | Remarks
+-------|------------------|------------|--------
+Raw    | `"0000"`         | `"2359"`   | `"2400"` is considered illegal
+Parsed | `00:00`          | `24:00`    | the Ruby way
+
 ### References
 
 * [ICAO Doc 8126: Aeronautical Information Services Manual](https://www.icao.int/NACC/Documents/eDOCS/AIM/8126_unedited_en%20Jul2021.pdf)
