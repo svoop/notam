@@ -14,7 +14,7 @@ module NOTAM
     # @see NOTAM::Item#parse
     def parse
       base_date = AIXM.date(data[:effective_at])
-      @schedules = cleanup(text).split(',').map do |string|
+      @schedules = cleanup(text).split(',').flat_map do |string|
         Schedule.parse(string, base_date: base_date)
       end
       self

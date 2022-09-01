@@ -1,4 +1,10 @@
 ## Main
+
+#### Breaking Changes
+* `NOTAM::Schedule.parse` now returns an array of `NOTAM_Schedule` instances
+  instead of just a single one (to model date and time ranges across midnight).
+
+#### Additions
 * Wrap all exceptions raised while parsing items.
 
 ## 0.1.3

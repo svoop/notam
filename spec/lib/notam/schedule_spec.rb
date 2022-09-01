@@ -7,22 +7,45 @@ describe NOTAM::Schedule do
     describe :parse do
       it "must extract schedule :date_with_exception" do
         subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_with_exception], base_date: AIXM.date('2000-02-01'))
-        _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
-        _(subject.actives).must_equal [(AIXM.date('2000-02-01')..AIXM.date('2000-03-31'))]
-        _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('11:00'))]
-        _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
-        _(subject.inactives).must_equal [AIXM.day(:friday)]
+        _(subject.count).must_equal 1
+        _(subject.first.actives).must_be_instance_of NOTAM::Schedule::Dates
+        _(subject.first.actives).must_equal [(AIXM.date('2000-02-01')..AIXM.date('2000-03-31'))]
+        _(subject.first.times).must_equal [(AIXM.time('07:00')..AIXM.time('11:00'))]
+        _(subject.first.inactives).must_be_instance_of NOTAM::Schedule::Days
+        _(subject.first.inactives).must_equal [AIXM.day(:friday)]
       end
 
       it "must extract schedule :day_with_exception" do
         subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day_with_exception], base_date: AIXM.date('2000-02-01'))
-        _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
-        _(subject.actives).must_equal [(AIXM.day(:monday)..AIXM.day(:tuesday))]
-        _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('19:00'))]
-        _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
-        _(subject.inactives).must_equal [AIXM.date('2000-02-15')]
+        _(subject.count).must_equal 1
+        _(subject.first.actives).must_be_instance_of NOTAM::Schedule::Days
+        _(subject.first.actives).must_equal [(AIXM.day(:monday)..AIXM.day(:tuesday))]
+        _(subject.first.times).must_equal [(AIXM.time('07:00')..AIXM.time('19:00'))]
+        _(subject.first.inactives).must_be_instance_of NOTAM::Schedule::Dates
+        _(subject.first.inactives).must_equal [AIXM.date('2000-02-15')]
       end
     end
+
+# TODO: parse the following as well
+#
+# a) when the activity covers more than 24 hours (start date) (start time)-(end date) (end time);
+# d) when entering a succession of activities that span midnight UTC (start date) (start time)-(end time).
+#
+# 08 2100-0400
+# 30 2100-0400
+# 08 30 2100-0400
+# 08-09 2100-0400
+# 08-09 30 2100-0400
+# 08-09 29-30 2100-0400
+# 08-09 29-30 2100-0400 EXC MON
+#
+# JUN 08 2100-0400
+# JUN 30 2100-0400
+# JUN 08 30 2100-0400
+# JUN 08-09 2100-0400
+# JUN 08-09 30 2100-0400
+# 08-09 29-30 2100-0400
+# 08-09 29-30 2100-0400 EXC MON
 
     describe :empty? do
       subject do
@@ -46,28 +69,32 @@ describe NOTAM::Schedule do
     describe :slice do
       it "consolidates :date_with_exception" do
         subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_with_exception], base_date: AIXM.date('2000-02-02'))
-        _(subject.slice(AIXM.date('2000-02-02'), AIXM.date('2000-02-05')).to_s).must_equal(
+        _(subject.count).must_equal 1
+        _(subject.first.slice(AIXM.date('2000-02-02'), AIXM.date('2000-02-05')).to_s).must_equal(
           "#<NOTAM::Schedule actives: [2000-02-02..2000-02-03, 2000-02-05], times: [07:00 UTC..11:00 UTC], inactives: []>"
         )
       end
 
       it "consolidates :day_with_exception" do
         subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day_with_exception], base_date: AIXM.date('2000-01-01'))
-        _(subject.slice(AIXM.date('2000-02-14'), AIXM.date('2000-02-27')).to_s).must_equal(
+        _(subject.count).must_equal 1
+        _(subject.first.slice(AIXM.date('2000-02-14'), AIXM.date('2000-02-27')).to_s).must_equal(
           "#<NOTAM::Schedule actives: [2000-02-14, 2000-02-21..2000-02-22], times: [07:00 UTC..19:00 UTC], inactives: []>"
         )
       end
 
       it "defaults to a time frame of one day" do
         subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daytime], base_date: AIXM.date('2000-01-01'))
-        _(subject.slice(AIXM.date('2000-02-02')).to_s).must_equal(
+        _(subject.count).must_equal 1
+        _(subject.first.slice(AIXM.date('2000-02-02')).to_s).must_equal(
           "#<NOTAM::Schedule actives: [2000-02-02], times: [sunrise..sunset], inactives: []>"
         )
       end
 
       it "accepts custom time frames" do
         subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daytime], base_date: AIXM.date('2000-01-01'))
-        _(subject.slice(AIXM.date('2000-02-02'), AIXM.date('2000-02-03')).to_s).must_equal(
+        _(subject.count).must_equal 1
+        _(subject.first.slice(AIXM.date('2000-02-02'), AIXM.date('2000-02-03')).to_s).must_equal(
           "#<NOTAM::Schedule actives: [2000-02-02..2000-02-03], times: [sunrise..sunset], inactives: []>"
         )
       end
@@ -79,7 +106,7 @@ describe NOTAM::Schedule do
     # rounded up (sunrise) or down (sunset) to the next 5 minutes.
     describe :resolve do
       subject do
-        NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daytime], base_date: AIXM.date('2025-01-01')).slice(AIXM.date('2025-07-01'))
+        NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daytime], base_date: AIXM.date('2025-01-01')).first.slice(AIXM.date('2025-07-01'))
       end
 
       it "resolves sunrise and sunset to clock times" do
@@ -99,11 +126,13 @@ describe NOTAM::Schedule do
       end
 
       it "returns true if the given time is covered by active times" do
-        _(subject.active?(at: Time.utc(2000, 1, 1, 12, 0), xy: AIXM.xy(lat: 49.01614, long: 2.54423))).must_equal true
+        _(subject.count).must_equal 1
+        _(subject.first.active?(at: Time.utc(2000, 1, 1, 12, 0), xy: AIXM.xy(lat: 49.01614, long: 2.54423))).must_equal true
       end
 
       it "returns false if the given time is not covered by active times" do
-        _(subject.active?(at: Time.utc(2000, 1, 1, 1, 0), xy: AIXM.xy(lat: 49.01614, long: 2.54423))).must_equal false
+        _(subject.count).must_equal 1
+        _(subject.first.active?(at: Time.utc(2000, 1, 1, 1, 0), xy: AIXM.xy(lat: 49.01614, long: 2.54423))).must_equal false
       end
     end
   end

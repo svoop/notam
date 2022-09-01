@@ -58,6 +58,7 @@ module NOTAM
       # @param string [String] raw schedule string
       # @param base_date [Date] month and year to assume when missing (day is
       #   force set to 1)
+      # @return [Array<NOTAM::Schedule>] array of at least one schedule object
       def parse(string, base_date:)
         raw_actives, raw_times, raw_inactives = string.split(/((?: ?#{TIME_RANGE_RE.decapture})+)/).map(&:strip)
         raw_inactives = raw_inactives&.sub(/^EXC /, '')
@@ -72,7 +73,7 @@ module NOTAM
             inactives = raw_inactives ? days_from(raw_inactives) : Days.new
           end
           initialize(actives, times, inactives, base_date: base_date)
-          self
+          [self]
         end
       end
     end
