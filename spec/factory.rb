@@ -64,11 +64,7 @@ module NOTAM
           one_month: 'D) 16 23 H24, 19 21-24 28 0600-1700',
           weekdays: 'D) MON-FRI 0700-1100 1300-1700',
           date_with_exception: 'D) FEB 01-MAR 31 0700-1100 EXC FRI',
-          day_with_exception: 'D) MON-TUE 0700-1900 EXC FEB 15',
-          hours: 'D) DAILY 2200-0500',
           daytime: 'D) SR-SS',
-          sun_to_hour: 'D) SR MINUS30-1500',
-          hour_to_sun: 'D) 1000-SS PLUS30',
           invalid: 'D) 22 0700-1700 23 0430-1800 24 0430-1400'
         }
       end
@@ -116,9 +112,28 @@ module NOTAM
 
       def schedule
         @schedule ||= {
-          date_with_exception: 'FEB 01-MAR 31 0700-1100 EXC FRI',
-          day_with_exception: 'MON-TUE 0700-1900 EXC FEB 15',
-          daytime: 'SR-SS'
+          date: '05 1130-1330',
+          dates: '05 09 13 1130-1330',
+          date_range: '05-18 1130-1330',
+          date_range_with_exception: '05-18 1130-1330 EXC FRI',
+          date_across_midnight: '08 29 2100-0600',
+          date_range_with_month: 'FEB 01-MAR 31 0700-1100',
+          day: 'MON 0700-1900',
+          days: 'MON WED FRI 0700-1900',
+          day_range: 'MON-TUE 0700-1900',
+          day_range_with_exception: 'MON-TUE 0700-1900 EXC FEB 15',
+          day_across_midnight: 'MON 2200-0400',
+          datetime: '08 0800-12 2000',
+          datetime_with_exception: '08 0800-12 2000 EXC FRI',
+          datetime_with_month: 'FEB 08 0800-MAR 12 2000',
+          datetime_across_midnight: 'MAY 29 2200-MAY 30 2200',
+          multiple_times: 'MON-FRI 0700-1100 1300-1700',
+          multiple_times_across_midnight: 'MON 0700-1100 2300-0200',
+          daily: 'DAILY 1000-2000',
+          daily_across_midnight: 'DAILY 2200-0500',
+          daytime: 'SR-SS',
+          sun_to_hour: 'SR MINUS30-1500',
+          hour_to_sun: '1000-SS PLUS30'
         }
       end
 

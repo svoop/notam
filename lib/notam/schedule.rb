@@ -7,21 +7,24 @@ module NOTAM
   # Structure to accommodate individual schedules used on D items
   class Schedule
     EVENTS = { 'SR' => :sunrise, 'SS' => :sunset }.freeze
+    EVENT_HOURS = { sunrise: AIXM.time('06:00'), sunset: AIXM.time('18:00') }.freeze
     OPERATIONS = { 'PLUS' => 1, 'MINUS' => -1 }.freeze
     MONTHS = { 'JAN' => 1, 'FEB' => 2, 'MAR' => 3, 'APR' => 4, 'MAY' => 5, 'JUN' => 6, 'JUL' => 7, 'AUG' => 8, 'SEP' => 9, 'OCT' => 10, 'NOV' => 11, 'DEC' => 12 }.freeze
     DAYS = { 'MON' => :monday, 'TUE' => :tuesday, 'WED' => :wednesday, 'THU' => :thursday, 'FRI' => :friday, 'SAT' => :saturday, 'SUN' => :sunday, 'DAILY' => :any, 'DLY' => :any }.freeze
 
+    DATE_RE = /[0-2]\d|3[01]/.freeze
+    DAY_RE = /#{DAYS.keys.join('|')}/.freeze
+    MONTH_RE = /#{MONTHS.keys.join('|')}/.freeze
     H24_RE = /(?<h24>H24)/.freeze
     HOUR_RE = /(?<hour>[01]\d|2[0-4])(?<minute>[0-5]\d)/.freeze
     OPERATIONS_RE = /#{OPERATIONS.keys.join('|')}/.freeze
     EVENT_RE = /(?<event>SR|SS)(?:\s(?<operation>#{OPERATIONS_RE})(?<delta>\d+))?/.freeze
     TIME_RE = /#{HOUR_RE}|#{EVENT_RE}/.freeze
     TIME_RANGE_RE = /#{TIME_RE}-#{TIME_RE}|#{H24_RE}/.freeze
-    DATE_RE = /[0-2]\d|3[01]/.freeze
-    DAY_RE = /#{DAYS.keys.join('|')}/.freeze
-    MONTH_RE = /#{MONTHS.keys.join('|')}/.freeze
+    DATETIME_RE = /(?:(?<month>#{MONTH_RE}) )?(?<date>#{DATE_RE}) (?<time>#{TIME_RE})/.freeze
+    DATETIME_RANGE_RE = /#{DATETIME_RE}-#{DATETIME_RE}/.freeze
 
-    H24 = (AIXM.time('00:00')..AIXM.time('24:00')).freeze
+    H24 = (AIXM::BEGINNING_OF_DAY..AIXM::END_OF_DAY).freeze
 
     # Active dates or days
     #
@@ -46,8 +49,7 @@ module NOTAM
 
     # @!visibility private
     def initialize(actives, times, inactives, base_date:)
-      @actives, @times, @inactives = actives, times, inactives
-      @base_date ||= base_date.at(day: 1)
+      @actives, @times, @inactives, @base_date = actives, times, inactives, base_date
     end
 
     class << self
@@ -60,21 +62,153 @@ module NOTAM
       #   force set to 1)
       # @return [Array<NOTAM::Schedule>] array of at least one schedule object
       def parse(string, base_date:)
-        raw_actives, raw_times, raw_inactives = string.split(/((?: ?#{TIME_RANGE_RE.decapture})+)/).map(&:strip)
-        raw_inactives = raw_inactives&.sub(/^EXC /, '')
-        allocate.instance_eval do
-          @base_date = base_date.at(day: 1)
-          times = times_from(raw_times)
-          if raw_actives.empty? || raw_actives.match?(DAY_RE)   # actives are days
-            actives = days_from(raw_actives)
-            inactives = raw_inactives ? dates_from(raw_inactives) : Dates.new
-          else
-            actives = dates_from(raw_actives)
-            inactives = raw_inactives ? days_from(raw_inactives) : Days.new
-          end
-          initialize(actives, times, inactives, base_date: base_date)
-          [self]
+        @rules, @exceptions = cleanup(string).split(/ EXC /).map(&:strip)
+        @base_date = base_date.at(day: 1)
+        case @rules
+        when /^#{DATETIME_RANGE_RE}$/
+          parse_datetimes
+        when /^(#{DAY_RE}|#{TIME_RANGE_RE})/
+          parse_days
+        when /^(#{DATE_RE}|#{MONTH_RE})/
+          parse_dates
+        else
+          fail! "unrecognized schedule"
         end
+      end
+
+      private
+
+      def parse_datetimes
+        from, to = @rules.split(/-/).map { datetime_from(_1) }
+        delta = to.date - from.date
+        fail! "invalid datetime" if delta < 1
+        inactives = days_from(@exceptions)
+        [
+          new(Dates[from.date], Times[(from.time..AIXM::END_OF_DAY)], inactives, base_date: @base_date),
+          (new(Dates[(from.date.next..to.date.prev)], Times[H24], inactives, base_date: @base_date) if delta > 1),
+          new(Dates[to.date], Times[(AIXM::BEGINNING_OF_DAY..to.time)], inactives, base_date: @base_date)
+        ].compact
+      end
+
+      %i(dates days).each do |active_unit|
+        inactive_unit = active_unit == :days ? :dates : :days
+        define_method("parse_#{active_unit}") do
+          raw_active_unit, raw_times, unmatched = @rules.split(/((?: ?#{TIME_RANGE_RE.decapture})+)/, 3)
+          fail! "unrecognized part after times" unless unmatched.empty?
+          actives = send("#{active_unit}_from", raw_active_unit.strip)
+          times = times_from(raw_times.strip)
+          inactives = send("#{inactive_unit}_from", @exceptions)
+          if times.any? &method(:across_midnight?)
+            times.each_with_object([]) do |time, array|
+              if across_midnight? time
+                array << new(actives, [(time.first..AIXM::END_OF_DAY)], inactives, base_date: @base_date)
+                array << new(actives.next, [(AIXM::BEGINNING_OF_DAY..time.last)], inactives, base_date: @base_date)
+              else
+                array << new(actives, [time], inactives, base_date: @base_date)
+              end
+            end
+          else
+            [new(actives, times, inactives, base_date: @base_date)]
+          end
+        end
+      end
+
+      # @return [String]
+      def cleanup(string)
+        string
+        .gsub(/\s+/, ' ')     # collapse whitespaces to single space
+        .gsub(/ *- */, '-')   # remove spaces around dashes
+        .strip
+      end
+
+      # @return [AIXM::Schedule::DateTime]
+      def datetime_from(string)
+        parts = string.match(DATETIME_RE).named_captures
+        parts['year'] = @base_date.year
+        parts['month'] = MONTHS[parts['month']] || @base_date.month
+        AIXM.datetime(
+          AIXM.date('%4d-%02d-%02d' % parts.slice('year', 'month', 'date').values.map(&:to_i)),
+          AIXM.time(parts['time'])
+        )
+      end
+
+      # @return [Array<Date, Range<Date>>]
+      def dates_from(string)
+        return Dates.new if string.nil?
+        array, index, base_date = [], 0, @base_date.dup
+        while index < string.length
+          case string[index..]
+          when /\A((?<from>#{DATE_RE})-(?:(?<month>#{MONTH_RE}) )?(?<to>#{DATE_RE}))/   # range of dates
+            month = $~[:month] ? MONTHS.fetch($~[:month]) : base_date.month
+            base_date = base_date.at(month: month, wrap: true).tap do |to_base_date|
+              array << (base_date.at(day: $~[:from].to_i)..to_base_date.at(day: $~[:to].to_i))
+            end
+          when /\A(?<day>#{DATE_RE})/   # single date
+            array << base_date.at(day: $~[:day].to_i)
+          when /\A(?<month>#{MONTH_RE})/
+            base_date = base_date.at(month: MONTHS.fetch($~[:month]), wrap: true)
+          else
+            fail! "unrecognized date"
+          end
+          index += $&.length + 1
+        end
+        Dates.new(array)
+      end
+
+      # @return [Array<AIXM::Schedule::Day, Range<AIXM::Schedule::Day>>]
+      def days_from(string)
+        return Days.new if string.nil?
+        array = if string.empty?   # no declared day implies any day
+          [AIXM::ANY_DAY]
+        else
+          string.split(' ').map do |token|
+            from, to = token.split('-')
+            if to   # range of days
+              (AIXM.day(DAYS.fetch(from))..AIXM.day(DAYS.fetch(to)))
+            else   # single day
+              AIXM.day(DAYS.fetch(from))
+            end
+          end
+        end
+        Days.new(array)
+      end
+
+      # @return [Array<Range<AIXM::Schedule::Time>>]
+      def times_from(string)
+        array = string.split(/ (?!#{OPERATIONS_RE})/).map { time_range_from(_1) }
+        Times.new(array)
+      end
+
+      # @return [Range<AIXM::Schedule::Time>]
+      def time_range_from(string)
+        case string
+        when H24_RE
+          H24
+        else
+          from, to = string.split('-')
+          (time_from(from)..time_from(to))
+        end
+      end
+
+      # @return [AIXM::Schedule::Time]
+      def time_from(string)
+        case string
+        when HOUR_RE
+          hour, minute = $~[:hour], $~[:minute]
+          AIXM.time([hour, minute].join(':'))
+        when EVENT_RE
+          event, operation, delta = $~[:event], $~[:operation], $~[:delta]&.to_i
+          AIXM.time(EVENTS.fetch(event), plus: delta ? OPERATIONS.fetch(operation) * delta : 0)
+        else
+          fail! "unrecognized time"
+        end
+      end
+
+      # @return [Boolean]
+      def across_midnight?(time_range)
+        from = time_range.first.time || EVENT_HOURS.fetch(time_range.first.event).time
+        to = time_range.last.time || EVENT_HOURS.fetch(time_range.last.event).time
+        from > to
       end
     end
 
@@ -140,78 +274,6 @@ module NOTAM
       resolve(on: date, xy: xy).slice(date).times.cover? AIXM.time(at)
     end
 
-    private
-
-    # @return [Array<Date, Range<Date>>]
-    def dates_from(string)
-      array, index, base_date = [], 0, @base_date.dup
-      while index < string.length
-        case string[index..]
-        when /\A((?<from>#{DATE_RE})-(?:(?<month>#{MONTH_RE}) )?(?<to>#{DATE_RE}))/   # range of dates
-          month = $~[:month] ? MONTHS.fetch($~[:month]) : base_date.month
-          base_date = base_date.at(month: month, wrap: true).tap do |to_base_date|
-            array << (base_date.at(day: $~[:from].to_i)..to_base_date.at(day: $~[:to].to_i))
-          end
-        when /\A(?<day>#{DATE_RE})/   # single date
-          array << base_date.at(day: $~[:day].to_i)
-        when /\A(?<month>#{MONTH_RE})/
-          base_date = base_date.at(month: MONTHS.fetch($~[:month]), wrap: true)
-        else
-          fail! "unrecognized date"
-        end
-        index += $&.length + 1
-      end
-      Dates.new(array)
-    end
-
-    # @return [Array<AIXM::Schedule::Day, Range<AIXM::Schedue::Day>>]
-    def days_from(string)
-      array = if string.empty?   # no declared day implies any day
-        [AIXM.day(:any)]
-      else
-        string.split(' ').map do |token|
-          from, to = token.split('-')
-          if to   # range of days
-            (AIXM.day(DAYS.fetch(from))..AIXM.day(DAYS.fetch(to)))
-          else   # single day
-            AIXM.day(DAYS.fetch(from))
-          end
-        end
-      end
-      Days.new(array)
-    end
-
-    # @return [Array<Range<AIXM::Schedule::Time>>]
-    def times_from(string)
-      array = string.split(/ (?!#{OPERATIONS_RE})/).map { time_range_from(_1) }
-      Times.new(array)
-    end
-
-    # @return [Range<AIXM::Schedule::Time>]
-    def time_range_from(string)
-      case string
-      when H24_RE
-        H24
-      else
-        from, to = string.split('-')
-        (time_from(from)..time_from(to))
-      end
-    end
-
-    # @return [AIXM::Schedule::Time]
-    def time_from(string)
-      case string
-      when HOUR_RE
-        hour, minute = $~[:hour], $~[:minute]
-        AIXM.time([hour, minute].join(':'))
-      when EVENT_RE
-        event, operation, delta = $~[:event], $~[:operation], $~[:delta]&.to_i
-        AIXM.time(EVENTS.fetch(event), plus: delta ? OPERATIONS.fetch(operation) * delta : 0)
-      else
-        fail! "unrecognized time"
-      end
-    end
-
     # @abstract
     class ScheduleArray < Array
       # @return [String]
@@ -232,6 +294,19 @@ module NOTAM
       def cover?(object)
         any? { object.covered_by? _1 }
       end
+
+      # Step through all elements and shift all dates or days to the next day
+      #
+      # @return [ScheduleArray]
+      def next
+        entries.map do |entry|
+          if entry.instance_of? Range
+            (entry.first.next..entry.last.next)
+          else
+            entry.next
+          end
+        end.then { self.class.new(_1) }
+      end
     end
 
     class Dates < ScheduleArray
@@ -241,7 +316,7 @@ module NOTAM
       def cluster
         self.class.new(
           entries
-            .slice_when { _1.succ != _2 }
+            .slice_when { _1.next != _2 }
             .map { _1.count > 1 ? (_1.first.._1.last) : _1.first }
         )
       end

@@ -5,47 +5,358 @@ require_relative '../../spec_helper'
 describe NOTAM::Schedule do
   context 'public' do
     describe :parse do
-      it "must extract schedule :date_with_exception" do
-        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_with_exception], base_date: AIXM.date('2000-02-01'))
-        _(subject.count).must_equal 1
-        _(subject.first.actives).must_be_instance_of NOTAM::Schedule::Dates
-        _(subject.first.actives).must_equal [(AIXM.date('2000-02-01')..AIXM.date('2000-03-31'))]
-        _(subject.first.times).must_equal [(AIXM.time('07:00')..AIXM.time('11:00'))]
-        _(subject.first.inactives).must_be_instance_of NOTAM::Schedule::Days
-        _(subject.first.inactives).must_equal [AIXM.day(:friday)]
+      let :base_date do
+        AIXM.date('2000-02-01')
       end
 
-      it "must extract schedule :day_with_exception" do
-        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day_with_exception], base_date: AIXM.date('2000-02-01'))
-        _(subject.count).must_equal 1
-        _(subject.first.actives).must_be_instance_of NOTAM::Schedule::Days
-        _(subject.first.actives).must_equal [(AIXM.day(:monday)..AIXM.day(:tuesday))]
-        _(subject.first.times).must_equal [(AIXM.time('07:00')..AIXM.time('19:00'))]
-        _(subject.first.inactives).must_be_instance_of NOTAM::Schedule::Dates
-        _(subject.first.inactives).must_equal [AIXM.date('2000-02-15')]
+      it "must extract schedule :date" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-05')]
+          _(subject.times).must_equal [(AIXM.time('11:30')..AIXM.time('13:30'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :dates" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:dates], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-05'), AIXM.date('2000-02-09'), AIXM.date('2000-02-13')]
+          _(subject.times).must_equal [(AIXM.time('11:30')..AIXM.time('13:30'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :date_range" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_range], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [(AIXM.date('2000-02-05')..AIXM.date('2000-02-18'))]
+          _(subject.times).must_equal [(AIXM.time('11:30')..AIXM.time('13:30'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :date_range_with_exception" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_range_with_exception], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [(AIXM.date('2000-02-05')..AIXM.date('2000-02-18'))]
+          _(subject.times).must_equal [(AIXM.time('11:30')..AIXM.time('13:30'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_equal [AIXM.day(:friday)]
+        end
+      end
+
+      it "must extract schedule :date_across_midnight" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_across_midnight], base_date: base_date)
+        _(schedules.count).must_equal 2
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-08'), AIXM.date('2000-02-29')]
+          _(subject.times).must_equal [(AIXM.time('21:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[1].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-09'), AIXM.date('2000-03-01')]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('06:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :date_range_with_month" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_range_with_month], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [(AIXM.date('2000-02-01')..AIXM.date('2000-03-31'))]
+          _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('11:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :day" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:monday)]
+          _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('19:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :days" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:days], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:monday), AIXM.day(:wednesday), AIXM.day(:friday)]
+          _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('19:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :day_range" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day_range], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [(AIXM.day(:monday)..AIXM.day(:tuesday))]
+          _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('19:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :day_range_with_exception" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day_range_with_exception], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [(AIXM.day(:monday)..AIXM.day(:tuesday))]
+          _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('19:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_equal [AIXM.date('2000-02-15')]
+        end
+      end
+
+      it "must extract schedule :day_across_midnight" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day_across_midnight], base_date: base_date)
+        _(schedules.count).must_equal 2
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:monday)]
+          _(subject.times).must_equal [(AIXM.time('22:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[1].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:tuesday)]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('04:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :datetime" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:datetime], base_date: base_date)
+        _(schedules.count).must_equal 3
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-08')]
+          _(subject.times).must_equal [(AIXM.time('08:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[1].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [(AIXM.date('2000-02-09')..AIXM.date('2000-02-11'))]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[2].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-12')]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('20:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :datetime_with_exception" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:datetime_with_exception], base_date: base_date)
+        _(schedules.count).must_equal 3
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-08')]
+          _(subject.times).must_equal [(AIXM.time('08:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_equal [AIXM.day(:friday)]
+        end
+        schedules[1].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [(AIXM.date('2000-02-09')..AIXM.date('2000-02-11'))]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_equal [AIXM.day(:friday)]
+        end
+        schedules[2].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-12')]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('20:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_equal [AIXM.day(:friday)]
+        end
+      end
+
+      it "must extract schedule :datetime_with_month" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:datetime_with_month], base_date: base_date)
+        _(schedules.count).must_equal 3
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-08')]
+          _(subject.times).must_equal [(AIXM.time('08:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[1].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [(AIXM.date('2000-02-09')..AIXM.date('2000-03-11'))]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[2].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-03-12')]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('20:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :datetime_across_midnight" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:datetime_across_midnight], base_date: base_date)
+        _(schedules.count).must_equal 2
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-05-29')]
+          _(subject.times).must_equal [(AIXM.time('22:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[1].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-05-30')]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('22:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :multiple_times" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:multiple_times], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [(AIXM.day(:monday)..AIXM.day(:friday))]
+          _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('11:00')), (AIXM.time('13:00')..AIXM.time('17:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :multiple_times_across_midnight" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:multiple_times_across_midnight], base_date: base_date)
+        _(schedules.count).must_equal 3
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:monday)]
+          _(subject.times).must_equal [(AIXM.time('07:00')..AIXM.time('11:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[1].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:monday)]
+          _(subject.times).must_equal [(AIXM.time('23:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[2].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:tuesday)]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('02:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :daily" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daily], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:any)]
+          _(subject.times).must_equal [(AIXM.time('10:00')..AIXM.time('20:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :daily_across_midnight" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daily_across_midnight], base_date: base_date)
+        _(schedules.count).must_equal 2
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:any)]
+          _(subject.times).must_equal [(AIXM.time('22:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+        schedules[1].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:any)]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('05:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :daytime" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daytime], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:any)]
+          _(subject.times).must_equal [(AIXM.time(:sunrise)..AIXM.time(:sunset))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :sun_to_hour" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:sun_to_hour], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:any)]
+          _(subject.times).must_equal [(AIXM.time(:sunrise, minus: 30)..AIXM.time('15:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
+      it "must extract schedule :hour_to_sun" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:hour_to_sun], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.actives).must_equal [AIXM.day(:any)]
+          _(subject.times).must_equal [(AIXM.time('10:00')..AIXM.time(:sunset, plus: 30))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.inactives).must_be :empty?
+        end
       end
     end
-
-# TODO: parse the following as well
-#
-# a) when the activity covers more than 24 hours (start date) (start time)-(end date) (end time);
-# d) when entering a succession of activities that span midnight UTC (start date) (start time)-(end time).
-#
-# 08 2100-0400
-# 30 2100-0400
-# 08 30 2100-0400
-# 08-09 2100-0400
-# 08-09 30 2100-0400
-# 08-09 29-30 2100-0400
-# 08-09 29-30 2100-0400 EXC MON
-#
-# JUN 08 2100-0400
-# JUN 30 2100-0400
-# JUN 08 30 2100-0400
-# JUN 08-09 2100-0400
-# JUN 08-09 30 2100-0400
-# 08-09 29-30 2100-0400
-# 08-09 29-30 2100-0400 EXC MON
 
     describe :empty? do
       subject do
@@ -67,26 +378,34 @@ describe NOTAM::Schedule do
     end
 
     describe :slice do
-      it "consolidates :date_with_exception" do
-        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_with_exception], base_date: AIXM.date('2000-02-02'))
+      it "consolidates :date_range_with_exception" do
+        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_range_with_exception], base_date: AIXM.date('2000-02-02'))
         _(subject.count).must_equal 1
-        _(subject.first.slice(AIXM.date('2000-02-02'), AIXM.date('2000-02-05')).to_s).must_equal(
-          "#<NOTAM::Schedule actives: [2000-02-02..2000-02-03, 2000-02-05], times: [07:00 UTC..11:00 UTC], inactives: []>"
+        _(subject[0].slice(AIXM.date('2000-02-09'), AIXM.date('2000-02-12')).to_s).must_equal(
+          "#<NOTAM::Schedule actives: [2000-02-09..2000-02-10, 2000-02-12], times: [11:30 UTC..13:30 UTC], inactives: []>"
         )
       end
 
-      it "consolidates :day_with_exception" do
-        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day_with_exception], base_date: AIXM.date('2000-01-01'))
+      it "consolidates :day_range_with_exception" do
+        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day_range_with_exception], base_date: AIXM.date('2000-01-01'))
         _(subject.count).must_equal 1
-        _(subject.first.slice(AIXM.date('2000-02-14'), AIXM.date('2000-02-27')).to_s).must_equal(
+        _(subject[0].slice(AIXM.date('2000-02-14'), AIXM.date('2000-02-27')).to_s).must_equal(
           "#<NOTAM::Schedule actives: [2000-02-14, 2000-02-21..2000-02-22], times: [07:00 UTC..19:00 UTC], inactives: []>"
+        )
+      end
+
+      it "consolidates :datetime_with_exception" do
+        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:datetime_with_exception], base_date: AIXM.date('2000-02-01'))
+        _(subject.count).must_equal 3
+        _(subject[1].slice(AIXM.date('2000-02-09'), AIXM.date('2000-02-10')).to_s).must_equal(
+          "#<NOTAM::Schedule actives: [2000-02-09..2000-02-10], times: [00:00 UTC..24:00 UTC], inactives: []>"
         )
       end
 
       it "defaults to a time frame of one day" do
         subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daytime], base_date: AIXM.date('2000-01-01'))
         _(subject.count).must_equal 1
-        _(subject.first.slice(AIXM.date('2000-02-02')).to_s).must_equal(
+        _(subject[0].slice(AIXM.date('2000-02-02')).to_s).must_equal(
           "#<NOTAM::Schedule actives: [2000-02-02], times: [sunrise..sunset], inactives: []>"
         )
       end
@@ -94,7 +413,7 @@ describe NOTAM::Schedule do
       it "accepts custom time frames" do
         subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:daytime], base_date: AIXM.date('2000-01-01'))
         _(subject.count).must_equal 1
-        _(subject.first.slice(AIXM.date('2000-02-02'), AIXM.date('2000-02-03')).to_s).must_equal(
+        _(subject[0].slice(AIXM.date('2000-02-02'), AIXM.date('2000-02-03')).to_s).must_equal(
           "#<NOTAM::Schedule actives: [2000-02-02..2000-02-03], times: [sunrise..sunset], inactives: []>"
         )
       end
@@ -139,10 +458,28 @@ describe NOTAM::Schedule do
 
   context 'private' do
     subject do
-      NOTAM::Schedule.allocate
+      NOTAM::Schedule
+    end
+
+    describe :cleanup do
+      it "must collapse whitespaces to single space" do
+        _(subject.send(:cleanup, "this\n\nis  a test")).must_equal 'this is a test'
+      end
+
+      it "must remove spaces around dashes" do
+        _(subject.send(:cleanup, "0100-0200, 0300 -0400, 0500 - 0600, 0700-  0800")).must_equal '0100-0200, 0300-0400, 0500-0600, 0700-0800'
+      end
+
+      it "must remove heading and trailing whitespaces" do
+        _(subject.send(:cleanup, " foobar \n\n")).must_equal 'foobar'
+      end
     end
 
     describe :dates_from do
+      it "recognizes nil" do
+        _(subject.send(:dates_from, nil)).must_equal([])
+      end
+
       it "recognizes implicit month" do
         subject.instance_eval { @base_date = AIXM.date('2000-03-01') }
         _(subject.send(:dates_from, '01 19 26-28')).must_equal([
@@ -202,6 +539,10 @@ describe NOTAM::Schedule do
     end
 
     describe :days_from do
+      it "recognizes nil" do
+        _(subject.send(:days_from, nil)).must_equal([])
+      end
+
       it "recognizes single weekdays and ranges of weekdays" do
         _(subject.send(:days_from, 'MON WED-FRI SUN')).must_equal([
           AIXM.day(:monday),
@@ -239,6 +580,28 @@ describe NOTAM::Schedule do
         _(subject.send(:time_from, 'SS MINUS25')).must_equal AIXM.time(:sunset, minus: 25)
       end
     end
+
+    describe :across_midnight? do
+      it "returns false for daytime ranges" do
+        _(subject.send(:across_midnight?, (AIXM.time('11:00')..AIXM.time('22:00')))).must_equal false
+        _(subject.send(:across_midnight?, (AIXM.time('00:00')..AIXM.time('24:00')))).must_equal false
+      end
+
+      it "returns true for nighttime ranges" do
+        _(subject.send(:across_midnight?, (AIXM.time('22:00')..AIXM.time('11:00')))).must_equal true
+        _(subject.send(:across_midnight?, (AIXM.time('24:00')..AIXM.time('00:00')))).must_equal true
+      end
+
+      it "approximates sunrise to 6:00" do
+        _(subject.send(:across_midnight?, (AIXM.time('05:59')..AIXM.time(:sunrise)))).must_equal false
+        _(subject.send(:across_midnight?, (AIXM.time('06:01')..AIXM.time(:sunrise)))).must_equal true
+      end
+
+      it "approximates sunset to 18:00" do
+        _(subject.send(:across_midnight?, (AIXM.time('17:59')..AIXM.time(:sunset)))).must_equal false
+        _(subject.send(:across_midnight?, (AIXM.time('18:01')..AIXM.time(:sunset)))).must_equal true
+      end
+    end
   end
 
   describe NOTAM::Schedule::ScheduleArray do
@@ -254,6 +617,47 @@ describe NOTAM::Schedule do
 
       it "returns false if the argument is neither equal to nor covered by any entry" do
         _(subject.cover?(AIXM.day(:tuesday))).must_equal false
+      end
+    end
+
+    describe :next do
+      context 'dates' do
+        it "shifts single dates one day forward" do
+          subject = NOTAM::Schedule::ScheduleArray.new([AIXM.date('2000-01-01')])
+          _(subject.next).must_equal [AIXM.date('2000-01-02')]
+        end
+
+        it "shifts multiple dates one day forward" do
+          subject = NOTAM::Schedule::ScheduleArray.new([AIXM.date('2004-02-28'), AIXM.date('2004-12-31')])
+          _(subject.next).must_equal [AIXM.date('2004-02-29'), AIXM.date('2005-01-01')]
+        end
+
+        it "shifts date ranges one day forward" do
+          subject = NOTAM::Schedule::ScheduleArray.new([(AIXM.date('2004-02-01')..AIXM.date('2004-02-28'))])
+          _(subject.next).must_equal [(AIXM.date('2004-02-02')..AIXM.date('2004-02-29'))]
+        end
+      end
+
+      context 'days' do
+        it "shifts single days one day forward" do
+          subject = NOTAM::Schedule::ScheduleArray.new([AIXM.day(:monday)])
+          _(subject.next).must_equal [AIXM.day(:tuesday)]
+        end
+
+        it "shifts multiple days one day forward" do
+          subject = NOTAM::Schedule::ScheduleArray.new([AIXM.day(:monday), AIXM.day(:friday)])
+          _(subject.next).must_equal [AIXM.day(:tuesday), AIXM.day(:saturday)]
+        end
+
+        it "shifts day ranges one day forward" do
+          subject = NOTAM::Schedule::ScheduleArray.new([(AIXM.day(:monday)..AIXM.day(:wednesday))])
+          _(subject.next).must_equal [(AIXM.day(:tuesday)..AIXM.day(:thursday))]
+        end
+
+        it "leaves any day untouched" do
+          subject = NOTAM::Schedule::ScheduleArray.new([AIXM.day(:any)])
+          _(subject.next).must_equal [AIXM.day(:any)]
+        end
       end
     end
   end

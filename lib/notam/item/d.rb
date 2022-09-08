@@ -14,7 +14,7 @@ module NOTAM
     # @see NOTAM::Item#parse
     def parse
       base_date = AIXM.date(data[:effective_at])
-      @schedules = cleanup(text).split(',').flat_map do |string|
+      @schedules = text.sub(/\AD\)/, '').split(',').flat_map do |string|
         Schedule.parse(string, base_date: base_date)
       end
       self
@@ -54,16 +54,6 @@ module NOTAM
     # @return [Time]
     def five_day_base
       @five_day_base ||= [data[:effective_at], Time.now.utc.round].max
-    end
-
-    # @params string [String] string to clean up
-    # @return [String]
-    def cleanup(string)
-      string
-        .gsub(/\s+/, ' ')           # collapse whitespaces to single space
-        .gsub(/ ?([-,]) ?/, '\1')   # remove spaces around dashes and commas
-        .sub(/\AD\) /, '')          # remove item identifier
-        .strip
     end
 
   end
