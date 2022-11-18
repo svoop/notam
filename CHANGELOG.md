@@ -4,6 +4,9 @@
 * `NOTAM::Schedule.parse` now returns an array of `NOTAM_Schedule` instances
   instead of just a single one.
 
+#### Changes
+* Edge case tolerant extraction of `PART n OF n` and `END PART n OF n` markers
+
 #### Additions
 * Support for datetime ranges (i.e. `1 APR 2000-20 MAY 2000`) as well as times
   across midnight (i.e. `1 APR 1900-0500`) on D items.

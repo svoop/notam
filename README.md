@@ -41,12 +41,13 @@ bundle install --trust-policy MediumSecurity
 raw_notam_text_message = <<~END
   W0902/22 NOTAMN
   Q) LSAS/QRRCA/V/BO/W/000/148/4624N00702E004
-  A) LSAS B) 2204110900 C) 2205131400 EST
+  A) LSAS PART 2 OF 3 B) 2204110900 C) 2205131400 EST
   D) APR 11 SR MINUS15-1900, 20-21 26-28 MAY 03-05 10-12 0530-2100, APR
   14 22 29 MAY 06 13 0530-1400, APR 19 25 MAY 02 09 0800-2100
   E) R-AREA LS-R7 HONGRIN ACT DUE TO FRNG.
   F) GND
   G) 14800FT AMSL
+  END PART 2 OF 3
   CREATED: 11 Apr 2022 06:10:00
   SOURCE: LSSNYNYX
 END
@@ -75,8 +76,8 @@ The resulting hash for this example looks as follows:
   center_point: #<AIXM::XY 46.40000000N 007.03333333E>,
   radius: #<AIXM::D 4.0 nm>,
   locations: ["LSAS"],
-  part_index: 1,
-  part_index_max: 1,
+  part_index: 2,
+  part_index_max: 3,
   effective_at: 2022-04-11 09:00:00 UTC,
   expiration_at: 2022-05-13 14:00:00 UTC,
   estimated_expiration?: false,
@@ -119,8 +120,9 @@ See the [API documentation](https://www.rubydoc.info/gems/notam) for more.
 
 ### Anatomy of a NOTAM message
 
-A NOTAM message consists of a header followed by the following items:
+A NOTAM message consists of the following items in order:
 
+* Header: ID and type of NOTAM
 * [Q item](https://www.rubydoc.info/gems/notam/NOTAM/Q): Essential information such as purpose or center point and radius
 * [A item](https://www.rubydoc.info/gems/notam/NOTAM/A): Affected locations
 * [B item](https://www.rubydoc.info/gems/notam/NOTAM/B): When the NOTAM becomes effective
@@ -129,6 +131,9 @@ A NOTAM message consists of a header followed by the following items:
 * [E item](https://www.rubydoc.info/gems/notam/NOTAM/E): Free text description
 * [F item](https://www.rubydoc.info/gems/notam/NOTAM/F): Upper limit (optional)
 * [G item](https://www.rubydoc.info/gems/notam/NOTAM/G): Lower limit (optional)
+* Footer: Any number of lines with metadata such as `CREATED` and `SOURCE`
+
+Furthermore, oversized NOTAM may be split into several partial messages which contain with `PART n OF n` and `END PART n OF n` markers. This is an unofficial extension and therefore the markers may be found in different places such as on the A item, on the E item or even somewhere in between.
 
 ### FIR
 
@@ -219,12 +224,13 @@ Please [create a translation request issue](https://github.com/svoop/notam/issue
 
 ## Tests and Fixtures
 
-The test suite may run against live NOTAM if you set the `SPEC_SCOPE` environment variable:
+The test suite may run against live NOTAM depending on whether and how you set the `SPEC_SCOPE` environment variable:
 
 ```
+export SPEC_SCOPE=none       # don't run against any NOTAM fixtures (default)
+export SPEC_SCOPE=W0214/22   # run against given NOTAM fixture only
 export SPEC_SCOPE=all        # run against all NOTAM fixtures
 export SPEC_SCOPE=all-fast   # run against all NOTAM fixtures but exit on the first failure
-export SPEC_SCOPE=W0214/22   # run against given NOTAM fixture only
 ```
 
 The NOTAM fixtures are written to `spec/fixtures`, you can manage them using a Rake tasks:

@@ -4,17 +4,22 @@ module NOTAM
 
   # NOTAM messages are plain text and consist of several ordered items:
   #
-  #   WDDDD/DD ...   <- Header line (mandatory)
-  #   Q) ...         <- Q line: context (mandatory)
-  #   A) ...         <- A line: locations (mandatory)
-  #   B) ...         <- B line: effective from (mandatory)
-  #   C) ...         <- C line: effective until (optional)
-  #   D) ...         <- D line: timesheets (optional, may contain newlines)
-  #   E) ...         <- E line: description (mandatory, may contain newlines)
-  #   F) ...         <- F line: upper limit (optional)
-  #   G) ...         <- G line: lower limit (optional)
+  #   WDDDD/DD ...   <- Header (mandatory)
+  #   Q) ...         <- Q item: context (mandatory)
+  #   A) ...         <- A item: locations (mandatory)
+  #   B) ...         <- B item: effective from (mandatory)
+  #   C) ...         <- C item: effective until (optional)
+  #   D) ...         <- D item: timesheets (optional, may contain newlines)
+  #   E) ...         <- E item: description (mandatory, may contain newlines)
+  #   F) ...         <- F item: upper limit (optional)
+  #   G) ...         <- G item: lower limit (optional)
   #   CREATED: ...   <- Footer (optional)
   #   SOURCE: ...    <- Footer (optional)
+  #
+  # Furthermore, oversized NOTAM may be split into several partial messages
+  # which contain with +PART n OF n+ and +END PART n OF n+ markers. This is an
+  # unofficial extension and therefore the markers may be found in different
+  # places such as on the A item, on the E item or even somewhere in between.
   class Message
 
     UNSUPPORTED_FORMATS = %r(
@@ -23,6 +28,10 @@ module NOTAM
       \w{3}\s\w{3}\s\([OU]\) |            # USA: (O) and (U) NOTAM
       \w{3}\s[A-Z]\d{4}/\d{2}\sMILITARY   # USA: military
     )xi.freeze
+
+    PART_RE = %r(
+      (?:END\s+)?PART\s+(?<part_index>\d+)\s+OF\s+(?<part_index_max>\d+)
+    )xim.freeze
 
     FINGERPRINTS = %w[Q) A) B) C) D) E) F) G) CREATED: SOURCE:].freeze
 
@@ -44,10 +53,9 @@ module NOTAM
     def initialize(text)
       fail(NOTAM::ParserError, "unsupported format") unless self.class.supported_format? text
       @text, @items, @data = text, [], {}
-      itemize(text).each do |raw_item|
+      itemize(departition(@text)).each do |raw_item|
         item = NOTAM::Item.new(raw_item, data: @data).parse.merge
         @items << item
-        @data = item.data
       end
     end
 
@@ -95,6 +103,18 @@ module NOTAM
     end
 
     private
+
+    # @return [String]
+    def departition(text)
+      text.gsub(PART_RE, '').tap do
+        if $~   # part marker found
+          @data.merge!(
+            part_index: $~[:part_index].to_i,
+            part_index_max: $~[:part_index_max].to_i
+          )
+        end
+      end
+    end
 
     # @return [Array]
     def itemize(text)

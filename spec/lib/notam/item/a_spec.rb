@@ -18,24 +18,4 @@ describe NOTAM::A do
       _(subject[:lsas].locations).must_equal %w(LSAS LOVV LIMM)
     end
   end
-
-  describe :part_index do
-    it "detects multipart NOTAM index" do
-      _(subject[:checklist].part_index).must_equal 1
-    end
-
-    it "returns 1 for non-multipart NOTAM" do
-      _(subject[:egll].part_index).must_equal 1
-    end
-  end
-
-  describe :part_index_max do
-    it "detects multipart NOTAM max index" do
-      _(subject[:checklist].part_index_max).must_equal 5
-    end
-
-    it "returns 1 for non-multipart NOTAM" do
-      _(subject[:egll].part_index_max).must_equal 1
-    end
-  end
 end

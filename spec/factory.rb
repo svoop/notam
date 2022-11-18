@@ -5,19 +5,55 @@ module NOTAM
     class << self
 
       def message
-        <<~END
-          A0135/20 NOTAMN
-          Q) EGTT/QMRXX/IV/NBO/A/000/999/5129N00028W005
-          A) EGLL
-          B) 0201010600
-          C) 0203312300
-          D) MON-WED FRI SR MINUS15-1130 EXC 01-02 FEB 01-02 MAR 01-02
-          E) RWY 09R/27L DUE WIP NO CENTRELINE, TDZ OR SALS LIGHTING AVBL
-          F) 2000 FT AMSL
-          G) 2050 FT AMSL
-          CREATED: 01 Jan 2002 01:00:00
-          SOURCE: LSSNYNYX
-        END
+        @message ||= {
+          single:
+            <<~NEND,
+              A0135/20 NOTAMN
+              Q) EGTT/QMRXX/IV/NBO/A/000/999/5129N00028W005
+              A) EGLL
+              B) 0201010600
+              C) 0203312300
+              D) MON-WED FRI SR MINUS15-1130 EXC 01-02 FEB 01-02 MAR 01-02
+              E) RWY 09R/27L DUE WIP NO CENTRELINE, TDZ OR SALS LIGHTING AVBL
+              F) 2000 FT AMSL
+              G) 2050 FT AMSL
+              CREATED: 01 Jan 2002 01:00:00
+              SOURCE: LSSNYNYX
+            NEND
+          partitioned_without_end:
+            <<~NEND,
+              D3616/22 NOTAMN
+              Q) EDGG/QRTCA/IV/BO /W /000/100/5003N00804E012
+              A) EDGG PART 10 OF 11 B) 2211160800 C) 2211181800
+              D) NOV 16 0800-2200, NOV 17 0500-2200, NOV 18 0500-1800
+              E) TEMPO RESTRICTED AREA EDR RHEINGAU ESTABLISHED
+              CREATED: 15 Nov 2022 15:42:00
+              SOURCE: EUECYIYN
+            NEND
+          partitioned_with_end:
+            <<~NEND,
+              D3616/22 NOTAMN
+              Q) EDGG/QRTCA/IV/BO /W /000/100/5003N00804E012
+              A) EDGG PART 1 OF 2 B) 2211160800 C) 2211181800
+              D) NOV 16 0800-2200, NOV 17 0500-2200, NOV 18 0500-1800
+              E) TEMPO RESTRICTED AREA EDR RHEINGAU ESTABLISHED
+              END PART 1 OF 2
+              CREATED: 15 Nov 2022 15:42:00
+              SOURCE: EUECYIYN
+            NEND
+          partitioned_with_end_anywhere:
+            <<~NEND,
+              D3616/22 NOTAMN
+              Q) EDGG/QRTCA/IV/BO /W /000/100/5003N00804E012
+              A) EDGG PART 2 OF 2 B) 2211160800 C) 2211181800
+              D) NOV 16 0800-2200, NOV 17 0500-2200, NOV 18 0500-1800
+              E) - FLTS CONDUCTED ENTIRELY UNDER IFR
+              F) GND G) FL100
+              END PART 2 OF 2
+              CREATED: 15 Nov 2022 15:42:00
+              SOURCE: EUECYIYN
+            NEND
+        }
       end
 
       def header
@@ -38,8 +74,7 @@ module NOTAM
       def a
         @a ||= {
           egll: 'A) EGLL',
-          lsas: 'A) LSAS LOVV LIMM',
-          checklist: 'A) LSAS PART 1 OF 5'
+          lsas: 'A) LSAS LOVV LIMM'
         }
       end
 

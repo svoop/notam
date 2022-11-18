@@ -4,12 +4,16 @@ require_relative '../../spec_helper'
 
 describe NOTAM::Message do
   subject do
-    NOTAM::Message.parse(NOTAM::Factory.message)
+    NOTAM::Message.parse(NOTAM::Factory.message[:single])
   end
 
   describe :parse do
     context "fixtures" do
-      unless ENV['SPEC_SCOPE'].nil?
+      if ENV['SPEC_SCOPE'].nil? || ENV['SPEC_SCOPE'] == 'none'
+        it "parses all fixtures" do
+          skip
+        end
+      else
         prepare_fixtures
         globber = ENV['SPEC_SCOPE'].match?('/') ? ENV['SPEC_SCOPE'].sub(/\//, '_') : '*'
         fixtures_path.glob("#{globber}.txt") do |fixture|
@@ -31,17 +35,13 @@ describe NOTAM::Message do
             _(parsed_fingerprints - raw_fingerprints).must_be :empty?
           end
         end
-      else
-        it "parses all fixtures" do
-          skip
-        end
       end
     end
   end
 
   describe :text do
     it "exposes the raw NOTAM text message" do
-      _(subject.text).must_equal NOTAM::Factory.message
+      _(subject.text).must_equal NOTAM::Factory.message[:single]
     end
   end
 
@@ -57,13 +57,41 @@ describe NOTAM::Message do
   describe :data do
     it "returns a Hash containing the parsed NOTAM message" do
       _(subject.data).must_be_instance_of Hash
+      _(subject.data.keys.sort).must_equal %i(
+        center_point
+        condition
+        content
+        created
+        effective_at
+        estimated_expiration?
+        expiration_at
+        fir
+        five_day_schedules
+        id
+        id_number
+        id_series
+        id_year
+        locations
+        lower_limit
+        new?
+        no_expiration?
+        purpose
+        radius
+        schedules
+        scope
+        source
+        subject
+        traffic
+        translated_content
+        upper_limit
+      )
     end
   end
 
   describe :active? do
     context "D item missing" do
       subject do
-        NOTAM::Message.parse(NOTAM::Factory.message.sub(/D\).*\n/, ''))
+        NOTAM::Message.parse(NOTAM::Factory.message[:single].sub(/D\).*\n/, ''))
       end
 
       it "returns true if the time is between effective_at and expiration_at" do
@@ -77,7 +105,7 @@ describe NOTAM::Message do
 
     context "D item present" do
       subject do
-        NOTAM::Message.parse(NOTAM::Factory.message)
+        NOTAM::Message.parse(NOTAM::Factory.message[:single])
       end
 
       it "returns true if the time is covered by active times" do
@@ -86,6 +114,52 @@ describe NOTAM::Message do
 
       it "returns false if the NOTAM is not covered by active times" do
         _(subject.active?(at: Time.utc(2002, 1, 1, 10, 0))).must_equal true
+      end
+    end
+  end
+
+  describe :departition do
+    context "single NOTAM" do
+      subject do
+        NOTAM::Message.parse(NOTAM::Factory.message[:single])
+      end
+
+      it "does not add part_index and part_index_max keys to data" do
+        _(subject.data.key? :part_index).must_equal false
+        _(subject.data.key? :part_index_max).must_equal false
+      end
+    end
+
+    context "partitioned NOTAM without END" do
+      subject do
+        NOTAM::Message.parse(NOTAM::Factory.message[:partitioned_without_end])
+      end
+
+      it "adds part_index and part_index_max to data" do
+        _(subject.data[:part_index]).must_equal 10
+        _(subject.data[:part_index_max]).must_equal 11
+      end
+    end
+
+    context "partitioned NOTAM with END on E line" do
+      subject do
+        NOTAM::Message.parse(NOTAM::Factory.message[:partitioned_with_end])
+      end
+
+      it "adds part_index and part_index_max to data" do
+        _(subject.data[:part_index]).must_equal 1
+        _(subject.data[:part_index_max]).must_equal 2
+      end
+    end
+
+    context "partitioned NOTAM with END anywhere" do
+      subject do
+        NOTAM::Message.parse(NOTAM::Factory.message[:partitioned_with_end_anywhere])
+      end
+
+      it "adds part_index and part_index_max to data" do
+        _(subject.data[:part_index]).must_equal 2
+        _(subject.data[:part_index_max]).must_equal 2
       end
     end
   end
