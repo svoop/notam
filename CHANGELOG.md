@@ -1,5 +1,9 @@
 ## Main
 
+Nothing so far
+
+## 1.0.0
+
 #### Breaking Changes
 * `NOTAM::Schedule.parse` now returns an array of `NOTAM_Schedule` instances
   instead of just a single one.
