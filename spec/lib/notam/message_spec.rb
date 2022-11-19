@@ -60,6 +60,7 @@ describe NOTAM::Message do
       _(subject.data.keys.sort).must_equal %i(
         center_point
         condition
+        condition_group
         content
         created
         effective_at
@@ -81,6 +82,7 @@ describe NOTAM::Message do
         scope
         source
         subject
+        subject_group
         traffic
         translated_content
         upper_limit

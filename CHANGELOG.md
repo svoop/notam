@@ -1,6 +1,7 @@
 ## Main
 
-Nothing so far
+#### Additions
+* Extract subject group and condition group on Q item
 
 ## 1.0.0
 

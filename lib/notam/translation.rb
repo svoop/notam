@@ -26,12 +26,28 @@ module NOTAM
       FIRS.fetch(fir)
     end
 
+    # Translates the NOTAM subject group code to human/machine readable symbol
+    #
+    # @param code [String] one letter subject group code
+    # @return [Symbol] value from {NOTAM::SUBJECT_GROUPS}
+    def subject_group_for(code)
+      SUBJECT_GROUPS.fetch(code)
+    end
+
     # Translates the NOTAM subject code to human/machine readable symbol
     #
     # @param code [String] two letter subject code
     # @return [Symbol] value from {NOTAM::SUBJECTS}
     def subject_for(code)
       SUBJECTS.fetch(code)
+    end
+
+    # Translates the NOTAM condition group code to human/machine readable symbol
+    #
+    # @param code [String] one letter condition group code
+    # @return [Symbol] value from {NOTAM::CONDITION_GROUPS}
+    def condition_group_for(code)
+      CONDITION_GROUPS.fetch(code)
     end
 
     # Translates the NOTAM condition code to human/machine readable symbol
@@ -393,6 +409,27 @@ module NOTAM
     'ZYSH' => [:CH]
   }.freeze
 
+  # International NOTAM Q codes for subject groups
+  #
+  # @see https://www.faa.gov/air_traffic/publications/atpubs/notam_html/appendix_b.html
+  SUBJECT_GROUPS = {
+    'A' => :airspace_organization,
+    'C' => :communications_and_surveillance_facilities,
+    'F' => :facilities_and_services,
+    'G' => :gnss_services,
+    'I' => :instrument_and_microwave_landing_system,
+    'K' => :checklist,
+    'L' => :lighting_facilities,
+    'M' => :movement_and_landing_area,
+    'N' => :terminal_and_en_route_navigation_facilities,
+    'O' => :other_information,
+    'P' => :air_traffic_procedures,
+    'R' => :airspace_restrictions,
+    'S' => :air_traffic_and_volmet_services,
+    'W' => :warning,
+    'X' => :other
+  }.freeze
+
   # International NOTAM Q codes for subjects
   #
   # @see https://www.faa.gov/air_traffic/publications/atpubs/notam_html/appendix_b.html
@@ -577,6 +614,19 @@ module NOTAM
     'WY' => :aerial_survey,
     'WZ' => :model_flying,
     'XX' => :other
+  }.freeze
+
+  # International NOTAM Q codes for condition groups
+  #
+  # @see https://www.faa.gov/air_traffic/publications/atpubs/notam_html/appendix_b.html
+  CONDITION_GROUPS = {
+    'A' => :availability,
+    'C' => :changes,
+    'H' => :hazard_conditions,
+    'K' => :checklist,
+    'L' => :limitations,
+    'T' => :trigger,
+    'X' => :other
   }.freeze
 
   # International NOTAM Q codes for conditions

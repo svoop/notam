@@ -15,15 +15,27 @@ describe NOTAM::Q do
     end
   end
 
+  describe :subject_group do
+    it "returns subject group as symbol" do
+      _(subject[:egtt].subject_group).must_equal :movement_and_landing_area
+    end
+  end
+
   describe :subject do
     it "returns subject as symbol" do
       _(subject[:egtt].subject).must_equal :runway
     end
   end
 
+  describe :condition_group do
+    it "returns condition group as symbol" do
+      _(subject[:egtt].condition_group).must_equal :limitations
+    end
+  end
+
   describe :condition do
     it "returns condition as symbol" do
-      _(subject[:egtt].condition).must_equal :other
+      _(subject[:egtt].condition).must_equal :closed
     end
   end
 

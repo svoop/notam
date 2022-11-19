@@ -27,8 +27,18 @@ module NOTAM
     end
 
     # @return [Symbol]
+    def subject_group
+      NOTAM.subject_group_for(captures['subject'][0,1])
+    end
+
+    # @return [Symbol]
     def subject
       NOTAM.subject_for(captures['subject'])
+    end
+
+    # @return [Symbol]
+    def condition_group
+      NOTAM.condition_group_for(captures['condition'][0,1])
     end
 
     # @return [Symbol]
@@ -82,7 +92,7 @@ module NOTAM
 
     # @see NOTAM::Item#merge
     def merge
-      super(:fir, :subject, :condition, :traffic, :purpose, :scope, :lower_limit, :upper_limit, :center_point, :radius)
+      super(:fir, :subject_group, :subject, :condition_group, :condition, :traffic, :purpose, :scope, :lower_limit, :upper_limit, :center_point, :radius)
     end
 
   end

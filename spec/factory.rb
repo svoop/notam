@@ -66,7 +66,7 @@ module NOTAM
 
       def q
         @q ||= {
-          egtt: 'Q) EGTT/QMRXX/IV/NBO/AE/000/999/5129N00028W005',
+          egtt: 'Q) EGTT/QMRLC/IV/NBO/AE/000/999/5129N00028W005',
           lfnt: 'Q) LFNT/QMRXX/V /M  /A /000/999/4359N00445E001'
         }
       end
