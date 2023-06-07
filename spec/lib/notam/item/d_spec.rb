@@ -27,6 +27,17 @@ describe NOTAM::D do
       ])
     end
 
+    it "must extract timesheet :implicit_months" do
+      subject = NOTAM::Item.new(NOTAM::Factory.d[:implicit_months], data: data).parse
+      _(subject.schedules.map(&:to_s)).must_equal([
+        "#<NOTAM::Schedule actives: [2000-05-27], times: [05:30 UTC..10:00 UTC], inactives: []>",
+        "#<NOTAM::Schedule actives: [2000-05-30], times: [08:00 UTC..21:00 UTC], inactives: []>",
+        "#<NOTAM::Schedule actives: [2000-05-31], times: [05:30 UTC..21:00 UTC], inactives: []>",
+        "#<NOTAM::Schedule actives: [2000-06-05], times: [08:00 UTC..21:59 UTC], inactives: []>",
+        "#<NOTAM::Schedule actives: [2000-06-06..2000-06-08], times: [05:30 UTC..21:59 UTC], inactives: []>", "#<NOTAM::Schedule actives: [2000-06-09], times: [05:30 UTC..14:00 UTC], inactives: []>"
+      ])
+    end
+
     it "must extract timesheet :weekdays" do
       subject = NOTAM::Item.new(NOTAM::Factory.d[:weekdays], data: data).parse
       _(subject.schedules.map(&:to_s)).must_equal([

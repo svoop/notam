@@ -15,7 +15,11 @@ module NOTAM
     def parse
       base_date = AIXM.date(data[:effective_at])
       @schedules = text.sub(/\AD\)/, '').split(',').flat_map do |string|
-        Schedule.parse(string, base_date: base_date)
+        Schedule.parse(string, base_date: base_date).tap do |schedule|
+          if (date = schedule.first.actives.first).instance_of? AIXM::Schedule::Date
+            base_date = date   # carry over month
+          end
+        end
       end
       self
     rescue

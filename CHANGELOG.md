@@ -1,6 +1,8 @@
 ## Main
 
-Nothing so far
+#### Fixes
+* Carry over base date for multiple D-item elements which partially omit to
+  mention the month in every element
 
 ## 1.1.0
 
