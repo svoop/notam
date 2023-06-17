@@ -1,5 +1,9 @@
 ## Main
 
+Nothing so far
+
+## 1.1.2
+
 #### Fixes
 * Carry over last base date instead of first base date
 
