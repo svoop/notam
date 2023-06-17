@@ -28,7 +28,7 @@ module NOTAM
 
     # Active dates or days
     #
-    # @note If {#active} lists dates, then {#inactive} must list days and
+    # @note If {#actives} lists dates, then {#inactives} must list days and
     #   vice versa.
     #
     # @return [Array<NOTAM::Schedule::Dates>, Array<NOTAM::Schedule::Days>]
@@ -41,7 +41,7 @@ module NOTAM
 
     # Inactive dates or days
     #
-    # @note If {#inactive} lists dates, then {#active} must list days and
+    # @note If {#inactives} lists dates, then {#actives} must list days and
     #   vice versa.
     #
     # @return [Array<NOTAM::Schedule::Dates>, Array<NOTAM::Schedule::Days>]
@@ -272,6 +272,16 @@ module NOTAM
     def active?(at:, xy:)
       date = AIXM.date(at)
       resolve(on: date, xy: xy).slice(date).times.cover? AIXM.time(at)
+    end
+
+    # Last +actives+ date of the schedule (+inatives+ are ignored).
+    #
+    # @return [AIXM::Date, nil] last date or +nil+ if schedule actives are days
+    def last_date
+      actives.last.then do |active|
+        active = active.last if active.respond_to? :last
+        active if active.instance_of? AIXM::Schedule::Date
+      end
     end
 
     # @abstract

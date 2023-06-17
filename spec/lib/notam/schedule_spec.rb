@@ -33,6 +33,18 @@ describe NOTAM::Schedule do
         end
       end
 
+      it "must extract schedule :dates_with_month" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:dates_with_month], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [AIXM.date('2000-02-05'), AIXM.date('2000-03-06')]
+          _(subject.times).must_equal [(AIXM.time('11:00')..AIXM.time('12:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
       it "must extract schedule :date_range" do
         schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_range], base_date: base_date)
         _(schedules.count).must_equal 1
@@ -452,6 +464,18 @@ describe NOTAM::Schedule do
       it "returns false if the given time is not covered by active times" do
         _(subject.count).must_equal 1
         _(subject.first.active?(at: Time.utc(2000, 1, 1, 1, 0), xy: AIXM.xy(lat: 49.01614, long: 2.54423))).must_equal false
+      end
+    end
+
+    describe :last_date do
+      it "returns the last actives date if dates are used" do
+        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:dates_with_month], base_date: AIXM.date('2000-01-01'))
+        _(subject.first.last_date).must_equal AIXM.date('2000-03-06')
+      end
+
+      it "returns nil if days are used" do
+        subject = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:days], base_date: AIXM.date('2000-01-01'))
+        _(subject.first.last_date).must_be :nil?
       end
     end
   end

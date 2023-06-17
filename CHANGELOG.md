@@ -1,6 +1,7 @@
 ## Main
 
-Nothing so far
+#### Fixes
+* Carry over last base date instead of first base date
 
 ## 1.1.1
 

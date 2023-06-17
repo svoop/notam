@@ -212,6 +212,7 @@ Parsed | `00:00`          | `24:00`    | the Ruby way
 ### References
 
 * [ICAO Doc 8126: Aeronautical Information Services Manual](https://www.icao.int/NACC/Documents/eDOCS/AIM/8126_unedited_en%20Jul2021.pdf)
+* [ICAO Doc 10066: Aeronautical Information Management](https://ffac.ch/wp-content/uploads/2020/11/ICAO-Doc-10066-Aeronautical-Information-Management.pdf)
 * [EUROCONTROL Guidelines Operating Procedures AIS Dynamic Data (OPADD)](https://www.eurocontrol.int/sites/default/files/2021-07/eurocontrol-guidelines-opadd-ed4-1.pdf)
 * [NOTAM Q Codes](https://www.faa.gov/air_traffic/publications/atpubs/notam_html/appendix_b.html)
 * [NOTAM Contractions](https://www.notams.faa.gov/downloads/contractions.pdf)

@@ -97,13 +97,12 @@ module NOTAM
         @d ||= {
           two_months: 'D) FEB 08-28 2000-2200, MAR 01-05 1800-2200',
           one_month: 'D) 16 23 H24, 19 21-24 28 0600-1700',
-          implicit_months: 'D) MAY 27 0530-1000, 30 0800-2100, 31 0530-2100, JUN 05 0800-2159, 06-08 0530-2159, 09 0530-1400',
+          simple_implicit_months: 'D) MAY 27 0530-1000, 30 0800-2100, 31 0530-2100, JUN 05 0800-2159, 06-08 0530-2159, 09 0530-1400',
+          complex_implicit_months: 'D) JUN 13-15 JUL 04-06 0530-2159, 08 10 0800-2159',
           weekdays: 'D) MON-FRI 0700-1100 1300-1700',
           date_with_exception: 'D) FEB 01-MAR 31 0700-1100 EXC FRI',
           daytime: 'D) SR-SS',
           invalid: 'D) 22 0700-1700 23 0430-1800 24 0430-1400'
-
-
         }
       end
 
@@ -152,6 +151,7 @@ module NOTAM
         @schedule ||= {
           date: '05 1130-1330',
           dates: '05 09 13 1130-1330',
+          dates_with_month: 'FEB 05 MAR 06 1100-1200',
           date_range: '05-18 1130-1330',
           date_range_with_exception: '05-18 1130-1330 EXC FRI',
           date_across_midnight: '08 29 2100-0600',
