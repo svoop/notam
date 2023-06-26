@@ -146,7 +146,7 @@ module NOTAM
           when /\A(?<day>#{DATE_RE})/   # single date
             array << base_date.at(day: $~[:day].to_i)
           when /\A(?<month>#{MONTH_RE})/
-            base_date = base_date.at(month: MONTHS.fetch($~[:month]), wrap: true)
+            base_date = base_date.at(month: MONTHS.fetch($~[:month]), wrap: false)
           else
             fail! "unrecognized date"
           end
