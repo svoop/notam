@@ -2,6 +2,11 @@
 
 Nothing so far
 
+## 1.1.3.pre1
+
+#### Changes
+* Don't wrap years when breaking down date ranges
+
 ## 1.1.2
 
 #### Fixes
