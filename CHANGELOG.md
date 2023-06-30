@@ -2,10 +2,11 @@
 
 Nothing so far
 
-## 1.1.3.pre1
+## 1.1.3
 
 #### Changes
 * Don't wrap years when breaking down date ranges
+* Allow HJ and HN in schedules
 
 ## 1.1.2
 

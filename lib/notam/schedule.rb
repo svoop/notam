@@ -15,16 +15,18 @@ module NOTAM
     DATE_RE = /[0-2]\d|3[01]/.freeze
     DAY_RE = /#{DAYS.keys.join('|')}/.freeze
     MONTH_RE = /#{MONTHS.keys.join('|')}/.freeze
-    H24_RE = /(?<h24>H24)/.freeze
+    HCODE_RE = /(?<hcode>H24|HJ|HN)/.freeze
     HOUR_RE = /(?<hour>[01]\d|2[0-4])(?<minute>[0-5]\d)/.freeze
     OPERATIONS_RE = /#{OPERATIONS.keys.join('|')}/.freeze
     EVENT_RE = /(?<event>SR|SS)(?:\s(?<operation>#{OPERATIONS_RE})(?<delta>\d+))?/.freeze
     TIME_RE = /#{HOUR_RE}|#{EVENT_RE}/.freeze
-    TIME_RANGE_RE = /#{TIME_RE}-#{TIME_RE}|#{H24_RE}/.freeze
+    TIME_RANGE_RE = /#{TIME_RE}-#{TIME_RE}|#{HCODE_RE}/.freeze
     DATETIME_RE = /(?:(?<month>#{MONTH_RE}) )?(?<date>#{DATE_RE}) (?<time>#{TIME_RE})/.freeze
     DATETIME_RANGE_RE = /#{DATETIME_RE}-#{DATETIME_RE}/.freeze
 
     H24 = (AIXM::BEGINNING_OF_DAY..AIXM::END_OF_DAY).freeze
+    HJ = (AIXM.time(:sunrise)..AIXM.time(:sunset)).freeze
+    HN = (AIXM.time(:sunset)..AIXM.time(:sunrise)).freeze
 
     # Active dates or days
     #
@@ -182,8 +184,8 @@ module NOTAM
       # @return [Range<AIXM::Schedule::Time>]
       def time_range_from(string)
         case string
-        when H24_RE
-          H24
+        when HCODE_RE
+          const_get($~[:hcode].upcase)
         else
           from, to = string.split('-')
           (time_from(from)..time_from(to))
