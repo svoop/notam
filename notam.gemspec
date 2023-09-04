@@ -45,7 +45,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'debug'
   spec.add_development_dependency 'minitest'
-  spec.add_development_dependency 'minitest-sound'
+  spec.add_development_dependency 'minitest-flash'
   spec.add_development_dependency 'minitest-focus'
   spec.add_development_dependency 'guard'
   spec.add_development_dependency 'guard-minitest'
