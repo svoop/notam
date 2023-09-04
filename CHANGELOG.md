@@ -1,6 +1,7 @@
 ## Main
 
-Nothing so far
+#### Changes
+* Drop obsolete countries gem
 
 ## 1.1.3
 

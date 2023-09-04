@@ -41,7 +41,6 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'aixm', '~> 1', '>= 1.3.2'
   spec.add_runtime_dependency 'i18n', '~> 1'
-  spec.add_runtime_dependency 'countries', '~> 4'
 
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'debug'
