@@ -100,7 +100,7 @@ module NOTAM
           actives = send("#{active_unit}_from", raw_active_unit.strip)
           times = times_from(raw_times.strip)
           inactives = send("#{inactive_unit}_from", @exceptions)
-          if times.any? &method(:across_midnight?)
+          if times.any?(&method(:across_midnight?))
             times.each_with_object([]) do |time, array|
               if across_midnight? time
                 array << new(actives, [(time.first..AIXM::END_OF_DAY)], inactives, base_date: @base_date)
