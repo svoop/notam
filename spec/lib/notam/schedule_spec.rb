@@ -100,6 +100,18 @@ describe NOTAM::Schedule do
         end
       end
 
+      it "must extract schedule :date_range_across_end_of_year" do
+        schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:date_range_across_end_of_year], base_date: base_date)
+        _(schedules.count).must_equal 1
+        schedules[0].then do |subject|
+          _(subject.actives).must_be_instance_of NOTAM::Schedule::Dates
+          _(subject.actives).must_equal [(AIXM.date('2000-12-30')..AIXM.date('2001-01-02'))]
+          _(subject.times).must_equal [(AIXM.time('00:00')..AIXM.time('24:00'))]
+          _(subject.inactives).must_be_instance_of NOTAM::Schedule::Days
+          _(subject.inactives).must_be :empty?
+        end
+      end
+
       it "must extract schedule :day" do
         schedules = NOTAM::Schedule.parse(NOTAM::Factory.schedule[:day], base_date: base_date)
         _(schedules.count).must_equal 1

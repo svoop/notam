@@ -156,6 +156,7 @@ module NOTAM
           date_range_with_exception: '05-18 1130-1330 EXC FRI',
           date_across_midnight: '08 29 2100-0600',
           date_range_with_month: 'FEB 01-MAR 31 0700-1100',
+          date_range_across_end_of_year: 'DEC 30-JAN 02 H24',
           day: 'MON 0700-1900',
           days: 'MON WED FRI 0700-1900',
           day_range: 'MON-TUE 0700-1900',
