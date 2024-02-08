@@ -5,9 +5,9 @@ require_relative "lib/notam/version"
 Gem::Specification.new do |spec|
   spec.name = "notam"
   spec.version = NOTAM::VERSION
-  spec.summary     = 'Parser for NOTAM (Notice to Airmen) messages'
+  spec.summary     = 'Parser for NOTAM (Notice to Air Missions) messages'
   spec.description = <<~END
-    Parser for NOTAM (Notice to Airmen) messages in Ruby.
+    Parser for NOTAM (Notice to Air Missions) messages in Ruby.
   END
   spec.authors     = ['Sven Schwyn']
   spec.email       = ['ruby@bitcetera.com']

@@ -5,7 +5,7 @@
 
 # NOTAM
 
-Parser for [NOTAM (Notice to Airmen)](https://www.icao.int/safety/istars/pages/notams.aspx) messages in Ruby.
+Parser for [NOTAM (Notice to Air Missions)](https://www.icao.int/safety/istars/pages/notams.aspx) messages in Ruby.
 
 * [Homepage](https://github.com/svoop/notam)
 * [API](https://www.rubydoc.info/gems/notam)
@@ -253,6 +253,10 @@ bundle exec guard   # run tests whenever files are modified
 ```
 
 You're welcome to [submit issues](https://github.com/svoop/notam/issues) and contribute code by [forking the project and submitting pull requests](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+
+## Trivia
+
+In the early days, the acronym [NOTAM](https://en.wikipedia.org/wiki/NOTAM) ment "Notice to Airmen". As many women roam the skies these days as well, it has finally been redefined as "Notice to Air Missions".
 
 ## License
 

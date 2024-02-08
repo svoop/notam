@@ -966,7 +966,7 @@ module NOTAM
     'NONSTD' => :nonstandard,
     'NOPT' => :no_procedure_turn_required,
     'NR' => :number,
-    'NTAP' => :notice_to_airmen_publication,
+    'NTAP' => :notice_to_air_missions_publication,
     'NW' => :northwest,
     'OBSC' => :obscured,
     'OBST' => :obstacle,
