@@ -5,6 +5,9 @@ require_relative '../notam/translation'
 
 namespace :fixtures do
   DEFAULT_FIRS = 'ED,LF,LO,LS'
+  IGNORE = [
+    'LFBB_R0188_24'   # broken - duplicate F item
+  ]
 
   desc "Fetch new NOTAM fixtures for comma separated informal two letter ICAO FIR codes (default: #{DEFAULT_FIRS})"
   task :fetch, [:firs] do |_, args|
@@ -21,9 +24,11 @@ namespace :fixtures do
         response.body.scan(/<pre>(.+?)<\/pre>/im) do |message|
           message = message.first
           if NOTAM::Message.supported_format? message
+            next unless message.match %r{^(\w+?)/(\w+?)\s+\w+\s+Q\)\s+(\w+?)/}
+            name = [$3, $1, $2].join('_')
+            next if IGNORE.include? name
             counter += 1
-            id = message.split(/\s/, 2).first.sub(/\W+/, '_')
-            File.write(fixtures_path.join("#{id}.txt"), message)
+            File.write(fixtures_path.join(name + '.txt'), message)
           end
         end
         puts "#{counter} fixtures downloaded"
@@ -46,8 +51,8 @@ namespace :fixtures do
     end
   end
 
-  desc "Clean current test NOTAM fixtures"
-  task :clean do
+  desc "Clear current test NOTAM fixtures"
+  task :clear do
     fixtures_path.rmtree
   end
 

@@ -1,6 +1,7 @@
 ## Main
 
-Nothing so far
+#### Changes
+* Add ignore list for fixtures broken upstream
 
 ## 1.1.5
 
