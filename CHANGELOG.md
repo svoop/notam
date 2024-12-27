@@ -1,6 +1,7 @@
 ## Main
 
 #### Changes
+* Update Ruby to 3.4
 * Add ignore list for fixtures broken upstream
 
 ## 1.1.5
