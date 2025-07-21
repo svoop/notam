@@ -3,6 +3,7 @@
 ### Changes
 * Drop certs
 * Add action for trusted release
+* Update Q codes as per AIRAC 2412
 
 ## 1.1.6
 

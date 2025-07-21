@@ -541,7 +541,6 @@ module NOTAM
     'MY' => :rapid_exit_taxiway,
     'NA' => :all_radio_navigation_facilities,
     'NB' => :nondirectional_radio_beacon,
-    'NC' => :decca,
     'ND' => :dme,
     'NF' => :fan_marker,
     'NL' => :locator,
@@ -604,6 +603,7 @@ module NOTAM
     'WJ' => :banner_towing,
     'WL' => :ascent_of_free_balloon,
     'WM' => :missile_gun_firing,
+    'WO' => :laser_emission,
     'WP' => :parachute_paragliding_or_hang_gliding,
     'WR' => :radioactive_or_toxic_materials,
     'WS' => :blowing_gas,
@@ -612,7 +612,7 @@ module NOTAM
     'WV' => :formation_flight,
     'WW' => :volcanic_activity,
     'WY' => :aerial_survey,
-    'WZ' => :model_flying,
+    'WZ' => :fireworks,
     'XX' => :other
   }.freeze
 
@@ -1109,5 +1109,3 @@ module NOTAM
   }.freeze
 
 end
-
-
