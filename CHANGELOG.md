@@ -2,6 +2,7 @@
 
 ### Changes
 * Drop certs
+* Add action for trusted release
 
 ## 1.1.6
 
