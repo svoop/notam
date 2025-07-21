@@ -25,9 +25,6 @@ Gem::Specification.new do |spec|
   spec.files         = Dir['lib/**/*']
   spec.require_paths = %w(lib)
 
-  spec.cert_chain  = ["certs/svoop.pem"]
-  spec.signing_key = File.expand_path(ENV['GEM_SIGNING_KEY']) if ENV['GEM_SIGNING_KEY']
-
   spec.extra_rdoc_files = Dir['README.md', 'CHANGELOG.md', 'LICENSE.txt']
   spec.rdoc_options    += [
     '--title', 'NOTAM Parser',

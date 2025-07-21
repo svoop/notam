@@ -15,16 +15,6 @@ Thank you for supporting free and open-source software by sponsoring on [GitHub]
 
 ## Install
 
-### Security
-
-This gem is [cryptographically signed](https://guides.rubygems.org/security/#using-gems) in order to assure it hasn't been tampered with. Unless already done, please add the author's public key as a trusted certificate now:
-
-```
-gem cert --add <(curl -Ls https://raw.github.com/svoop/notam/main/certs/svoop.pem)
-```
-
-### Bundler
-
 Add the following to the `Gemfile` or `gems.rb` of your [Bundler](https://bundler.io) powered Ruby project:
 
 ```ruby
@@ -34,7 +24,7 @@ gem 'notam'
 And then install the bundle:
 
 ```
-bundle install --trust-policy MediumSecurity
+bundle install
 ```
 
 ## Usage
