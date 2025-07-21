@@ -118,9 +118,9 @@ module NOTAM
       # @return [String]
       def cleanup(string)
         string
-        .gsub(/\s+/, ' ')     # collapse whitespaces to single space
-        .gsub(/ *- */, '-')   # remove spaces around dashes
-        .strip
+          .gsub(/\s+/, ' ')     # collapse whitespaces to single space
+          .gsub(/ *- */, '-')   # remove spaces around dashes
+          .strip
       end
 
       # @return [AIXM::Schedule::DateTime]
