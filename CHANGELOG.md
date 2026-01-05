@@ -1,6 +1,7 @@
 ## Main
 
-Nothing so far
+### Changes
+* Update Ruby to 4.0
 
 ## 1.2.0
 
