@@ -8,10 +8,12 @@ require 'pathname'
 require 'minitest/autorun'
 require Pathname(__dir__).join('..', 'lib', 'notam')
 
+require 'minitest/mock'
 require 'minitest/flash'
-require 'minitest/focus'
 
 require Pathname(__dir__).join('factory')
+
+Minitest.load_plugins
 
 class Minitest::Spec
   class << self
