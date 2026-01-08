@@ -11,6 +11,9 @@ namespace :fixtures do
 
   desc "Fetch new NOTAM fixtures for comma separated informal two letter ICAO FIR codes (default: #{DEFAULT_FIRS})"
   task :fetch, [:firs] do |_, args|
+# TODO: Switch to ICAO API once available again by then end of January 2026 - see https://applications.icao.int/dataservices/default.aspx
+puts "Fetching NOTAMs is not possible for now due to upstream API changes"
+exit
     unless ENV['PRESERVE_FIXTURES'] && fixtures_path.glob('*.txt').any?
       firs = (args[:firs] || DEFAULT_FIRS).split(/\W+/).map { NOTAM.expand_fir(_1) }.flatten
       Net::HTTP.post_form(
