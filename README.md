@@ -7,6 +7,9 @@
 
 Parser for [NOTAM (Notice to Air Missions)](https://www.icao.int/safety/istars/pages/notams.aspx) messages in Ruby.
 
+> [!IMPORTANT]
+> For personal reasons, I am no longer contributing to Open Flightmaps and therefore this gem is now archived and will not be updated anymore. Feel free to contact me if you want to revive or sponsor it.
+
 * [Homepage](https://github.com/svoop/notam)
 * [API](https://www.rubydoc.info/gems/notam)
 * Author: [Sven Schwyn - Bitcetera](https://bitcetera.com)
